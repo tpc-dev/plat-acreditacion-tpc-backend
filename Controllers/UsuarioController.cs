@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlatAcreditacionTPCBackend.Entidades;
 
@@ -19,6 +21,19 @@ namespace PlatAcreditacionTPCBackend.Controllers
         public async Task<ActionResult<List<Usuario>>> Get()
         {
             return await context.Usuarios.Include(x => x.TipoRol).ToListAsync();
+        }
+
+        [HttpGet("tiporol/{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<Usuario>>> GetUsuariosPorRol(int id)
+        {
+            var existeRol = await context.TipoRoles.AnyAsync(x => x.Id == id);
+            if (!existeRol)
+            {
+                return NotFound("El id de rol no existe");
+            }
+
+            return await context.Usuarios.Where(x => x.TipoRolId == id).ToListAsync();
         }
 
 
