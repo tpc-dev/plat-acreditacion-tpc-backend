@@ -25,6 +25,26 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return await context.Visitas.ToListAsync();
         }
 
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put(Visita visita, int id)
+        {
+            if (visita.Id != id)
+            {
+                return BadRequest("El id del visita no coincide con el id de la URL");
+            }
+
+            bool existe = await context.Visitas.AnyAsync(visita => visita.Id == id);
+            if (!existe)
+            {
+                return NotFound();
+            }
+
+            context.Update(visita);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post(Visita visita)
         {
@@ -36,6 +56,23 @@ namespace PlatAcreditacionTPCBackend.Controllers
             }
 
             context.Add(visita);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPut("marcar-ingreso/{idVisita:int}")]
+        public async Task<ActionResult> PostMarcarIngreso(int idVisita)
+        {
+            var existeVisita = await context.Visitas.AnyAsync(x => x.Id == idVisita);
+
+            if (!existeVisita)
+            {
+                return BadRequest($"No existe la visita de Id: {idVisita}");
+            }
+
+            var visitaBuscada = await context.Visitas.FirstOrDefaultAsync(x => x.Id == idVisita);
+            visitaBuscada.HaIngresado = true;
+            context.Entry(visitaBuscada).State = EntityState.Modified;
             await context.SaveChangesAsync();
             return Ok();
         }
@@ -53,6 +90,27 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return await context.Visitas.Include(x=> x.Usuario).Where(x => x.UsuarioId == id).ToListAsync();
         }
 
+        [HttpGet("activas")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<Visita>>> GetVisitasActivas()
+        {
+            return await context.Visitas.Include(x => x.Usuario).Where(x => x.HaIngresado == false).ToListAsync();
+        }
+
+
+        [HttpDelete("{idVisita:int}")]
+        public async Task<ActionResult> Delete(int idVisita)
+        {
+            var visitaBuscada = await context.Visitas.FirstOrDefaultAsync(x => x.Id == idVisita);
+            if (visitaBuscada ==null)
+            {
+                return BadRequest($"No existe la visita de Id: {idVisita}");
+            }
+
+            context.Remove(visitaBuscada);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
 
 
     }
