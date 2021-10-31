@@ -21,6 +21,8 @@ namespace PlatAcreditacionTPCBackend.Entidades
         public string Telefono { get; set; }
         [Required]
         public int TipoRolId { get; set; }
+        [Required]
+        public bool Activo{ get; set; }
         public TipoRol TipoRol { get; set; }
         [Required]
         public DateTime CreatedAt { get; set; }
