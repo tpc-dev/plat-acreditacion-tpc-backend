@@ -22,7 +22,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Visita>>> Get()
         {
-            return await context.Visitas.ToListAsync();
+            return await context.Visitas.Include(x => x.Usuario).ToListAsync();
         }
 
 

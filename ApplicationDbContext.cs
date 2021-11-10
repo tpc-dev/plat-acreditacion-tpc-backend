@@ -18,5 +18,11 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Visita> Visitas { get; set; }
     public DbSet<TipoRol> TipoRoles { get; set; }
+    public DbSet<Contrato> Contratos{ get; set; }
+    public DbSet<Empresa> Empresas{ get; set; }
+    public DbSet<EstadoAcreditacion> EstadosAcreditacion{ get; set; }
+    public DbSet<TipoDocumentoAcreditacion> TiposDocumentosAcreditacion{ get; set; }
+    public DbSet<EmpresaTipoDocumentoAcreditacion> EmpresaTiposDocumentosAcreditacion { get; set; }
+
 
 }

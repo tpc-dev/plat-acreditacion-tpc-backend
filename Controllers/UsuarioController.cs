@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PlatAcreditacionTPCBackend.DTOs;
 using PlatAcreditacionTPCBackend.Entidades;
 
 namespace PlatAcreditacionTPCBackend.Controllers
@@ -36,6 +37,19 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return await context.Usuarios.Where(x => x.TipoRolId == id).ToListAsync();
         }
 
+        [HttpGet("{id:int}/empresa")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<Empresa>> GetEmpresaUsuario(int id)
+        {
+            var existeUsuario = await context.Usuarios.FirstOrDefaultAsync(x => x.Id == id);
+            if (existeUsuario == null)
+            {
+                return NotFound("El id de usuario no existe");
+            }
+
+            return await context.Empresas.Include(x=>x.EstadoAcreditacion).Where(x => x.Id == existeUsuario.EmpresaId).FirstOrDefaultAsync();
+        }
+
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Usuario>> Get(int id)
@@ -44,16 +58,16 @@ namespace PlatAcreditacionTPCBackend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(Usuario usuario)
+        public async Task<ActionResult> Post(NuevoUsuarioDTO nuevoUsuarioDTO)
         {
-            var existeRol = await context.TipoRoles.AnyAsync(x => x.Id == usuario.TipoRolId);
+            var existeRol = await context.TipoRoles.AnyAsync(x => x.Id == nuevoUsuarioDTO.TipoRolId);
 
             if (!existeRol)
             {
-                return BadRequest($"No existe el rol de Id: {usuario.TipoRolId}");
+                return BadRequest($"No existe el rol de Id: {nuevoUsuarioDTO.TipoRolId}");
             }
 
-            context.Add(usuario);
+            context.Add(nuevoUsuarioDTO);
             await context.SaveChangesAsync();
             return Ok();
         }

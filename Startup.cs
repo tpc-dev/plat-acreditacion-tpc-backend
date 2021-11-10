@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PlatAcreditacionTPCBackend.Converters;
+using PlatAcreditacionTPCBackend.Models;
+using PlatAcreditacionTPCBackend.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +37,25 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         #region CORS
+        //services.AddCors( c =>
+        //{
+        //    c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+        //});
         services.AddCors();
+        #endregion
+
+
+        #region EMAIL
+
+        services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+        services.AddTransient<IMailService, Servicios.MailService>();
+
+        #endregion
+
+        #region SHAREPOINTSERVICE
+
+        services.AddSingleton<ISharePointService, Servicios.SharePointService>();
+
         #endregion
 
         services.AddControllers().AddJsonOptions(options =>
@@ -91,7 +111,7 @@ public class Startup
             });
         });
 
-        //services.addAutoMapper(typeof(startup));
+        services.AddAutoMapper(typeof(Startup));
 
         services.AddIdentity<IdentityUser, IdentityRole>()
         .AddEntityFrameworkStores<ApplicationDbContext>()

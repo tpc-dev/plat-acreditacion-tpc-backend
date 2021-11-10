@@ -12,8 +12,8 @@ using PlatAcreditacionTPCBackend;
 namespace PlatAcreditacionTPCBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211021030212_Initial")]
-    partial class Initial
+    [Migration("20211104044648_EMpresaContrato")]
+    partial class EMpresaContrato
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -222,6 +222,135 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Contrato", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("CodigoContrato")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmpresaId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("InicioAcreditacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("InicioContrato")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("TerminoContrato")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Contratos");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Empresa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("EstadoAcreditacionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RazonSocial")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rut")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstadoAcreditacionId");
+
+                    b.ToTable("Empresas");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EmpresaTipoDocumentoAcreditacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("EstadoAcreditacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TipoDocumentoAcreditacionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstadoAcreditacionId");
+
+                    b.HasIndex("TipoDocumentoAcreditacionId");
+
+                    b.ToTable("EmpresaTiposDocumentosAcreditacion");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EstadoAcreditacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EstadosAcreditacion");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TipoDocumentoAcreditacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TiposDocumentosAcreditacion");
+                });
+
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TipoRol", b =>
                 {
                     b.Property<int>("Id")
@@ -246,6 +375,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Apellido1")
                         .IsRequired()
@@ -388,6 +520,55 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Contrato", b =>
+                {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Empresa", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Empresa");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Empresa", b =>
+                {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.EstadoAcreditacion", "EstadoAcreditacion")
+                        .WithMany()
+                        .HasForeignKey("EstadoAcreditacionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EstadoAcreditacion");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EmpresaTipoDocumentoAcreditacion", b =>
+                {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.EstadoAcreditacion", "EstadoAcreditacion")
+                        .WithMany()
+                        .HasForeignKey("EstadoAcreditacionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.TipoDocumentoAcreditacion", "TipoDocumentoAcreditacion")
+                        .WithMany()
+                        .HasForeignKey("TipoDocumentoAcreditacionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EstadoAcreditacion");
+
+                    b.Navigation("TipoDocumentoAcreditacion");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Usuario", b =>

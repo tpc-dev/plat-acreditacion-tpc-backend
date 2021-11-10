@@ -12,8 +12,8 @@ using PlatAcreditacionTPCBackend;
 namespace PlatAcreditacionTPCBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211030231416_estadoactivousuario")]
-    partial class estadoactivousuario
+    [Migration("20211031191003_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
