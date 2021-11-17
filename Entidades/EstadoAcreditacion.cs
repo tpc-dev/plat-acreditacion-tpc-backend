@@ -8,5 +8,6 @@ namespace PlatAcreditacionTPCBackend.Entidades
         public int Id { get; set; }
         [Required]
         public string Descripcion { get; set; }
+        public bool Activo { get; set; }
     }
 }

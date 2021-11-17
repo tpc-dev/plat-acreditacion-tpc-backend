@@ -82,14 +82,29 @@ namespace PlatAcreditacionTPCBackend.Controllers
             context.Add(usuarioMapead);
             await context.SaveChangesAsync();
 
+          
+
             if (resultado.Succeeded)
             {
                 MailRequest mailRequest = new MailRequest
                 {
                     ToEmail = nuevoUsuarioDTO.Email,
                     Subject = "Bienvenido a la Plataforma de Acreditación TPC",
-                    Body = "Se ha creado un usuario para esta cuenta en la plataforma tpc, puede accedor usando como usuario " +
-                    "este correo " + nuevoUsuarioDTO.Email + " y su contraseña es :" + randomPassword,
+                    //Body = "Se ha creado un usuario para esta cuenta en la plataforma tpc, puede accedor usando como usuario " +
+                    //"este correo " + nuevoUsuarioDTO.Email + " y su contraseña es :" + randomPassword,
+                    Body = @"<html>
+                                <h1>
+                                    Bienvenido a la Plataforma de Acreditacion Acceso TPC
+                                </h1>
+                                <p>
+                                    Has sido invitado a tener acceso a la plataforma. <br>
+                                    Tu usuario  es : <strong>" + nuevoUsuarioDTO.Email + @"</strong> <br>
+                                    Tu contraseña es : <strong>" + randomPassword + @"</strong>
+                                </p>
+                                <p>
+                                    Saludos.
+                                </p>
+                            </html>"
                 };
 
                 try
@@ -141,21 +156,6 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return ConstruirToken(credencialesUsuario);
         }
 
-        //[HttpGet("Sharepoint")]
-        //public async Task<ActionResult<SharePointToken>> SharePoint()
-        //{
-        //    try
-        //    {
-        //        SharePointAccessRequest sharePointAccessRequest = new SharePointAccessRequest();
-        //        await sharePointService.GetTokenAccess(sharePointAccessRequest);
-        //        return Ok();
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        throw ex;
-        //    }
-        //}
 
         [HttpGet("Sharepoint")]
         public async Task<SharePointToken> SharePoint()

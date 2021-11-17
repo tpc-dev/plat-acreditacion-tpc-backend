@@ -23,6 +23,8 @@ namespace PlatAcreditacionTPCBackend.Entidades
         [Required]
         public DateTime InicioAcreditacion{ get; set; }
         [Required]
+        public DateTime TerminoAcreditacion { get; set; }
+        [Required]
         public bool Activo { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlatAcreditacionTPCBackend;
 
@@ -11,9 +12,10 @@ using PlatAcreditacionTPCBackend;
 namespace PlatAcreditacionTPCBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211111031357_ingresosvisitas")]
+    partial class ingresosvisitas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,9 +250,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<DateTime>("InicioContrato")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TerminoAcreditacion")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("TerminoContrato")
                         .HasColumnType("datetime2");
 
@@ -326,9 +325,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<bool>("Activo")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -363,37 +359,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.ToTable("IngresosVisitas");
                 });
 
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.ItemCarpetaArranque", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("Activo")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Evidencia")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Indice")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Obligatorio")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ItemsCarpetaArranque");
-                });
-
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TipoDocumentoAcreditacion", b =>
                 {
                     b.Property<int>("Id")
@@ -402,19 +367,11 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<bool>("Activo")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ItemCarpetaArranqueId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ItemCarpetaArranqueId");
 
                     b.ToTable("TiposDocumentosAcreditacion");
                 });
@@ -653,17 +610,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .IsRequired();
 
                     b.Navigation("Visita");
-                });
-
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TipoDocumentoAcreditacion", b =>
-                {
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.ItemCarpetaArranque", "ItemCarpetaArranque")
-                        .WithMany()
-                        .HasForeignKey("ItemCarpetaArranqueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ItemCarpetaArranque");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Usuario", b =>

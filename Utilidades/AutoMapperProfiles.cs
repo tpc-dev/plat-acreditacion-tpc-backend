@@ -9,6 +9,7 @@ namespace PlatAcreditacionTPCBackend.Utilidades
         public AutoMapperProfiles ()
         {
             CreateMap<NuevoUsuarioDTO, Usuario>();
+            CreateMap<IngresoVisitaDTO, IngresoVisitas>();
         }
     }
 }

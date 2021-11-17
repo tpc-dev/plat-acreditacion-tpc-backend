@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PlatAcreditacionTPCBackend.DTOs;
 using PlatAcreditacionTPCBackend.Entidades;
 
 namespace PlatAcreditacionTPCBackend.Controllers
@@ -13,10 +15,12 @@ namespace PlatAcreditacionTPCBackend.Controllers
     {
 
         private readonly ApplicationDbContext context;
+        private readonly IMapper mapper;
 
-        public VisitasController(ApplicationDbContext context)
+        public VisitasController(ApplicationDbContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -73,6 +77,37 @@ namespace PlatAcreditacionTPCBackend.Controllers
             var visitaBuscada = await context.Visitas.FirstOrDefaultAsync(x => x.Id == idVisita);
             visitaBuscada.HaIngresado = true;
             context.Entry(visitaBuscada).State = EntityState.Modified;
+
+            // creacion ingreso historico visita
+            IngresoVisitaDTO ingresoVisitaDTO = new() { VisitaId = idVisita, FechaEvento = DateTime.Now, Tipo = "ENTRADA" };
+            var visitaMapead = mapper.Map<IngresoVisitas>(ingresoVisitaDTO);
+            context.Add(visitaMapead);
+            //
+
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPut("marcar-salida/{idVisita:int}")]
+        public async Task<ActionResult> PostMarcarSalida(int idVisita)
+        {
+            var existeVisita = await context.Visitas.AnyAsync(x => x.Id == idVisita);
+
+            if (!existeVisita)
+            {
+                return BadRequest($"No existe la visita de Id: {idVisita}");
+            }
+
+            var visitaBuscada = await context.Visitas.FirstOrDefaultAsync(x => x.Id == idVisita);
+            visitaBuscada.HaIngresado = false;
+            context.Entry(visitaBuscada).State = EntityState.Modified;
+
+            // creacion ingreso historico visita
+            IngresoVisitaDTO ingresoVisitaDTO = new() { VisitaId = idVisita, FechaEvento = DateTime.Now, Tipo = "SALIDA" };
+            var visitaMapead = mapper.Map<IngresoVisitas>(ingresoVisitaDTO);
+            context.Add(visitaMapead);
+            //
+
             await context.SaveChangesAsync();
             return Ok();
         }
