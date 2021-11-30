@@ -12,6 +12,7 @@ using PlatAcreditacionTPCBackend.Servicios;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Web;
 
 namespace PlatAcreditacionTPCBackend.Controllers
 {
@@ -142,6 +143,77 @@ namespace PlatAcreditacionTPCBackend.Controllers
             }
         }
 
+
+        [HttpPost("reestablecer-cambiar-password")]
+        public async Task<ActionResult> ReestablecerCambiarPassword(ReestablecerPasswordParams reestablecerPasswordParams)
+        {
+            var user = await userManager.FindByEmailAsync(reestablecerPasswordParams.Email);
+            //var decodedToken = HttpUtility.UrlDecode(reestablecerPasswordParams.Token);
+            //var resetRes = await userManager.ResetPasswordAsync(user, decodedToken, reestablecerPasswordParams.NewPassword);
+            var resetRes = await userManager.ResetPasswordAsync(user, reestablecerPasswordParams.Token, reestablecerPasswordParams.NewPassword);
+
+            if (resetRes.Succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(resetRes.Errors);
+            }
+
+        }
+
+
+
+        [HttpPost("solicitar-recuperar-password")]
+        public async Task<ActionResult> RecuperarPassword(string email)
+        {
+            var cuentaBuscada = await context.Usuarios.FirstOrDefaultAsync(x => x.Email == email);
+
+            if(cuentaBuscada == null)
+            {
+                return BadRequest("No existe esta cuenta");
+            }
+
+            var user = await userManager.FindByEmailAsync(email);
+            var tokenReset = await userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = HttpUtility.UrlEncode(tokenReset);
+            MailRequest mailRequest = new MailRequest
+            {
+                ToEmail = email,
+                Subject = "Recuperar Contraseña",
+                //Body = "Se ha creado un usuario para esta cuenta en la plataforma tpc, puede accedor usando como usuario " +
+                //"este correo " + nuevoUsuarioDTO.Email + " y su contraseña es :" + randomPassword,
+                Body = @"<html>
+                                <h1>
+                                   Se ha solicitado reinicar su contraseña
+                                </h1>
+                                <p>
+                                    Si tu no has sido , ignora este correo. <br>
+                                    Ingresa a este link para cambiar tu contraseña: <strong> <a href="+ @"http://localhost:4200/resetpassword?token=" + encodedToken + @"&email="+user.Email + @">Presiona Aqui</a></strong> <br>
+                                </p>
+                                <p>
+                                    Saludos.
+                                </p>
+                            </html>"
+            };
+
+            try
+            {
+                await mailService.SendEmailAsync(mailRequest);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            
+
+            return Ok();
+        }
+
+
         [HttpGet("RenovarToken")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public ActionResult<RespuestaAutenticacion> Renovar()
@@ -203,7 +275,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
             var claims = new List<Claim>()
             {
                 new Claim("email",credencialesUsuario.Email),
-                new Claim("prueba", "asd")
+                new Claim("TPC", "AJSKJKASJ*@J123")
             };
 
             var llave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["llavejwt"]));
@@ -214,7 +286,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
             var securityToken = new JwtSecurityToken(issuer: null, audience: null, claims: claims, expires: expiracion,
                 signingCredentials: creds);
 
-            Usuario usuario = await context.Usuarios.Include(x => x.TipoRol).FirstOrDefaultAsync(usuarioDB => usuarioDB.Email == credencialesUsuario.Email);
+            Usuario usuario = await context.Usuarios.Include(x => x.TipoRol).Include(x => x.Empresa).FirstOrDefaultAsync(usuarioDB => usuarioDB.Email == credencialesUsuario.Email);
 
             return new RespuestaAutenticacionLogin
             {

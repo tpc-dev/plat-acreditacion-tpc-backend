@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlatAcreditacionTPCBackend;
 
@@ -11,9 +12,10 @@ using PlatAcreditacionTPCBackend;
 namespace PlatAcreditacionTPCBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211118040656_protocolosingreso")]
+    partial class protocolosingreso
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -418,73 +420,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.ToTable("ProtocolosIngresos");
                 });
 
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroCovidAccesos", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RegistroCovidFormularioId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Temperatura")
-                        .HasMaxLength(2)
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RegistroCovidFormularioId");
-
-                    b.ToTable("RegistrosCovidAccesos");
-                });
-
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroCovidFormulario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Apellido")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Empresa")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("HaTenidoContactoEstrecho")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HaTenidoSintomas")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Rut")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Sintomas")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RegistrosCovidFormularios");
-                });
-
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TipoDocumentoAcreditacion", b =>
                 {
                     b.Property<int>("Id")
@@ -744,17 +679,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .IsRequired();
 
                     b.Navigation("Visita");
-                });
-
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroCovidAccesos", b =>
-                {
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.RegistroCovidFormulario", "RegistroCovidFormulario")
-                        .WithMany()
-                        .HasForeignKey("RegistroCovidFormularioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RegistroCovidFormulario");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TipoDocumentoAcreditacion", b =>

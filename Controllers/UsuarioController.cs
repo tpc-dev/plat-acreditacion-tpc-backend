@@ -91,6 +91,39 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return Ok();
         }
 
+
+        [HttpPut("usuarioplataforma/{idUsuario:int}")]
+        public async Task<ActionResult> ActualizarUsuario(ActualizarUsuarioPlataformaDTO actualizarUsuarioPlataformaDTO, int idUsuario)
+        {
+            if (actualizarUsuarioPlataformaDTO.Id != idUsuario)
+            {
+                return BadRequest("El id del usuario no coincide con el id de la URL");
+            }
+
+
+            var usuarioBuscado = await context.Usuarios.FirstOrDefaultAsync(x => x.Id == idUsuario);
+
+            if (usuarioBuscado == null)
+            {
+                return NotFound();
+            }
+
+            usuarioBuscado.Nombre = actualizarUsuarioPlataformaDTO.Nombre;
+            usuarioBuscado.Apellido1 = actualizarUsuarioPlataformaDTO.Apellido1;
+            usuarioBuscado.Apellido2= actualizarUsuarioPlataformaDTO.Apellido2;
+            usuarioBuscado.Telefono = actualizarUsuarioPlataformaDTO.Telefono;
+
+            context.Entry(usuarioBuscado).State = EntityState.Modified;
+
+            await context.SaveChangesAsync();
+
+            Usuario usuario = await context.Usuarios.Include(x => x.TipoRol).Include(x => x.Empresa).FirstOrDefaultAsync(x => x.Id == idUsuario);
+
+
+            return Ok(usuario);
+        }
+
+
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {

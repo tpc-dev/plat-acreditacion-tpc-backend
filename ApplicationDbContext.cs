@@ -25,6 +25,9 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<TipoDocumentoAcreditacion> TiposDocumentosAcreditacion{ get; set; }
     public DbSet<EmpresaTipoDocumentoAcreditacion> EmpresaTiposDocumentosAcreditacion { get; set; }
     public DbSet<ItemCarpetaArranque> ItemsCarpetaArranque { get; set; }
+    public DbSet<ProtocoloIngreso> ProtocolosIngresos { get; set; }
+    public DbSet<RegistroCovidFormulario> RegistrosCovidFormularios { get; set; }
+    public DbSet<RegistroCovidAccesos> RegistrosCovidAccesos { get; set; }
 
 
 }

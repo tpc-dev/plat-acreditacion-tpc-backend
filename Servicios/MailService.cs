@@ -18,7 +18,20 @@ namespace PlatAcreditacionTPCBackend.Servicios
         {
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
-            email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
+
+            if (mailRequest.ToEmailList.Length > 0)
+            {
+                InternetAddressList list = new InternetAddressList();
+                foreach (var emailTo in mailRequest.ToEmailList)
+                {
+                    list.Add(new MailboxAddress(emailTo));
+                }
+                email.To.AddRange(list);
+            }
+            else
+            {
+                email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
+            }
             email.Subject = mailRequest.Subject;
             var builder = new BodyBuilder();
             if (mailRequest.Attachments != null)

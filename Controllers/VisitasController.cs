@@ -132,6 +132,33 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return await context.Visitas.Include(x => x.Usuario).Where(x => x.HaIngresado == false).ToListAsync();
         }
 
+        [HttpGet("hoy")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<Visita>>> GetVisitasHoy()
+        {   
+            DateTime fechaHoy = DateTime.Now;
+            return await context.Visitas.Include(x => x.Usuario).Where(x => x.FechaVisita.DayOfYear == fechaHoy.DayOfYear && x.FechaVisita.Month == fechaHoy.Month && x.FechaVisita.Year == fechaHoy.Year).ToListAsync();
+        }
+
+        [HttpGet("agendadas")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<Visita>>> GetVisitasAgendadas()
+        {
+
+            // VISITAS AGENDADAS DESDE HOY EN ADELANTE 
+            DateTime fechaManana = DateTime.Now.AddDays(1);
+            return await context.Visitas.Include(x => x.Usuario).Where(x => x.FechaVisita.DayOfYear == fechaManana.DayOfYear && x.FechaVisita.Month == fechaManana.Month && x.FechaVisita.Year == fechaManana.Year).ToListAsync();
+        }
+
+        [HttpGet("historico")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<Visita>>> GetVisitasHistorico()
+        {
+            DateTime fechaHoy = DateTime.Now;
+            return await context.Visitas.Include(x => x.Usuario).Where(x => x.FechaVisita.DayOfYear <= fechaHoy.DayOfYear && x.FechaVisita.Month <= fechaHoy.Month && x.FechaVisita.Year <= fechaHoy.Year).ToListAsync();
+        }
+
+
 
         [HttpDelete("{idVisita:int}")]
         public async Task<ActionResult> Delete(int idVisita)
