@@ -131,12 +131,12 @@ public class Startup
         });
         #endregion
 
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
+        //if (env.IsDevelopment())
+        //{
+            //app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API-TPC v1"));
-        }
+        //}
 
         app.UseHttpsRedirection();
 
