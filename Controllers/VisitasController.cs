@@ -147,7 +147,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
 
             // VISITAS AGENDADAS DESDE HOY EN ADELANTE 
             DateTime fechaManana = DateTime.Now.AddDays(1);
-            return await context.Visitas.Include(x => x.Usuario).Where(x => x.FechaVisita.DayOfYear == fechaManana.DayOfYear && x.FechaVisita.Month == fechaManana.Month && x.FechaVisita.Year == fechaManana.Year).ToListAsync();
+            return await context.Visitas.Include(x => x.Usuario).Where(x => x.FechaVisita>= fechaManana).ToListAsync();
         }
 
         [HttpGet("historico")]
