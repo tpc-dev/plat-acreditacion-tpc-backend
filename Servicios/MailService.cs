@@ -19,7 +19,7 @@ namespace PlatAcreditacionTPCBackend.Servicios
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
 
-            if (mailRequest.ToEmailList.Length > 0)
+            if (mailRequest.ToEmailList != null )
             {
                 InternetAddressList list = new InternetAddressList();
                 foreach (var emailTo in mailRequest.ToEmailList)

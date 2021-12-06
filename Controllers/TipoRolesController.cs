@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PlatAcreditacionTPCBackend.DTOs;
 using PlatAcreditacionTPCBackend.Entidades;
 
 namespace PlatAcreditacionTPCBackend.Controllers
@@ -12,10 +14,12 @@ namespace PlatAcreditacionTPCBackend.Controllers
     public class TipoRolesController : ControllerBase
     {
         private readonly ApplicationDbContext context;
+        private readonly IMapper mapper;
 
-        public TipoRolesController(ApplicationDbContext context)
+        public TipoRolesController(ApplicationDbContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -38,9 +42,10 @@ namespace PlatAcreditacionTPCBackend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(TipoRol tipoRol)
+        public async Task<ActionResult> Post(NuevoTipoRolDTO nuevoTipoRolDTO)
         {
-            context.Add(tipoRol);
+            var nuevoTipoRolMapped = mapper.Map<TipoRol>(nuevoTipoRolDTO);
+            context.Add(nuevoTipoRolMapped);
             await context.SaveChangesAsync();
             return Ok();
         }

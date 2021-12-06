@@ -11,8 +11,6 @@ namespace PlatAcreditacionTPCBackend.Entidades
         [Required]
         public string Apellido { get; set; }
         [Required]
-        public string Area { get; set; }
-        [Required]
         public string Rut { get; set; }
         [Required]
         public string Comentario { get; set; }
@@ -21,6 +19,9 @@ namespace PlatAcreditacionTPCBackend.Entidades
         [Required]
         public int UsuarioId { get; set; }
         public Usuario Usuario { get; set; }
+        [Required]
+        public int AreaId { get; set; }
+        public Area Area { get; set; }
         public DateTime FechaVisita { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

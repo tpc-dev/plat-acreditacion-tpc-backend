@@ -59,13 +59,12 @@ namespace PlatAcreditacionTPCBackend.Controllers
 
         [HttpPost("crear-cuenta")]
         public async Task<ActionResult<RespuestaAutenticacion>> CrearCuenta(NuevoUsuarioDTO nuevoUsuarioDTO)
-        {   
+        {
+            var existeEmpresa = await context.Empresas.AnyAsync(empresa => empresa.Id == nuevoUsuarioDTO.EmpresaId);
 
-            var existeUsuario = await context.Usuarios.AnyAsync(usuario => usuario.Email == nuevoUsuarioDTO.Email);
-
-            if (existeUsuario)
+            if (!existeEmpresa)
             {
-                return BadRequest("Ya existe un usuario con este correo");
+                return BadRequest($"No existe una empresa con id {nuevoUsuarioDTO.EmpresaId}");
             }
 
             var existeRol = await context.TipoRoles.AnyAsync(x => x.Id == nuevoUsuarioDTO.TipoRolId);
@@ -73,6 +72,20 @@ namespace PlatAcreditacionTPCBackend.Controllers
             if (!existeRol)
             {
                 return BadRequest($"No existe el rol con id{nuevoUsuarioDTO.TipoRolId}");
+            }
+
+            var existeUsuarioEmail = await context.Usuarios.AnyAsync(usuario => usuario.Email == nuevoUsuarioDTO.Email);
+
+            if (existeUsuarioEmail)
+            {
+                return BadRequest("Ya existe un usuario con este correo");
+            }
+
+            var existeUsuarioRut = await context.Usuarios.AnyAsync(usuario => usuario.Rut == nuevoUsuarioDTO.Rut);
+
+            if (existeUsuarioRut)
+            {
+                return BadRequest("Ya existe un usuario con este rut");
             }
 
             var newUsuario = new IdentityUser { UserName = nuevoUsuarioDTO.Email, Email = nuevoUsuarioDTO.Email };
@@ -83,7 +96,6 @@ namespace PlatAcreditacionTPCBackend.Controllers
             context.Add(usuarioMapead);
             await context.SaveChangesAsync();
 
-          
 
             if (resultado.Succeeded)
             {

@@ -11,11 +11,14 @@ namespace PlatAcreditacionTPCBackend.Entidades
         [Required]
         public string Descripcion { get; set; }
         [Required]
-        public int EmpresaId { get; set; }
-        public Empresa Empresa { get; set; }
+        public int ContratoUsuarioId { get; set; }
+        public ContratoUsuario ContratoUsuario { get; set; }
         [Required]
-        public int UsuarioId { get; set; }
-        public Usuario Usuario { get; set; }
+        public int AreaId { get; set; }
+        public Area Area { get; set; }
+        [Required]
+        public int GerenciaId { get; set; }
+        public Gerencia Gerencia { get; set; }
         [Required]
         public DateTime InicioContrato { get; set; }
         [Required]

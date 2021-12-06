@@ -59,6 +59,9 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 return BadRequest($"No existe el encargado de Id: {visita.UsuarioId}");
             }
 
+            visita.CreatedAt = DateTime.Now;
+            visita.UpdatedAt = DateTime.Now;    
+
             context.Add(visita);
             await context.SaveChangesAsync();
             return Ok();
@@ -122,14 +125,14 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 return NotFound("El id de encargado no existe");
             }
 
-            return await context.Visitas.Include(x=> x.Usuario).Where(x => x.UsuarioId == id).ToListAsync();
+            return await context.Visitas.Include(x => x.Area).Include(x=> x.Usuario).Where(x => x.UsuarioId == id).ToListAsync();
         }
 
         [HttpGet("activas")]
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<List<Visita>>> GetVisitasActivas()
         {
-            return await context.Visitas.Include(x => x.Usuario).Where(x => x.HaIngresado == false).ToListAsync();
+            return await context.Visitas.Include(x => x.Area).Include(x => x.Usuario).Where(x => x.HaIngresado == false).ToListAsync();
         }
 
         [HttpGet("hoy")]
@@ -137,7 +140,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
         public async Task<ActionResult<List<Visita>>> GetVisitasHoy()
         {   
             DateTime fechaHoy = DateTime.Now;
-            return await context.Visitas.Include(x => x.Usuario).Where(x => x.FechaVisita.DayOfYear == fechaHoy.DayOfYear && x.FechaVisita.Month == fechaHoy.Month && x.FechaVisita.Year == fechaHoy.Year).ToListAsync();
+            return await context.Visitas.Include(x => x.Area).Include(x => x.Usuario).Where(x => x.FechaVisita.DayOfYear == fechaHoy.DayOfYear && x.FechaVisita.Month == fechaHoy.Month && x.FechaVisita.Year == fechaHoy.Year).ToListAsync();
         }
 
         [HttpGet("agendadas")]
@@ -147,7 +150,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
 
             // VISITAS AGENDADAS DESDE HOY EN ADELANTE 
             DateTime fechaManana = DateTime.Now.AddDays(1);
-            return await context.Visitas.Include(x => x.Usuario).Where(x => x.FechaVisita>= fechaManana).ToListAsync();
+            return await context.Visitas.Include(x => x.Area).Include(x => x.Usuario).Where(x => x.FechaVisita>= fechaManana).ToListAsync();
         }
 
         [HttpGet("historico")]
@@ -155,7 +158,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
         public async Task<ActionResult<List<Visita>>> GetVisitasHistorico()
         {
             DateTime fechaHoy = DateTime.Now;
-            return await context.Visitas.Include(x => x.Usuario).Where(x => x.FechaVisita.DayOfYear <= fechaHoy.DayOfYear && x.FechaVisita.Month <= fechaHoy.Month && x.FechaVisita.Year <= fechaHoy.Year).ToListAsync();
+            return await context.Visitas.Include(x => x.Area).Include(x => x.Usuario).Where(x => x.FechaVisita.DayOfYear <= fechaHoy.DayOfYear && x.FechaVisita.Month <= fechaHoy.Month && x.FechaVisita.Year <= fechaHoy.Year).ToListAsync();
         }
 
 

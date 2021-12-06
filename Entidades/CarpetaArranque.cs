@@ -17,5 +17,9 @@ namespace PlatAcreditacionTPCBackend.Entidades
         [Required]
         public int ItemCarpetaArranqueId { get; set; }
         public ItemCarpetaArranque ItemCarpetaArranque { get; set; }
+        [Required]
+        public DateTime CreatedAt { get; set; }
+        [Required]
+        public DateTime UpdatedAt { get; set; }
     }
 }

@@ -12,8 +12,8 @@ using PlatAcreditacionTPCBackend;
 namespace PlatAcreditacionTPCBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211111031357_ingresosvisitas")]
-    partial class ingresosvisitas
+    [Migration("20211206031022_empresa2")]
+    partial class empresa2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -222,6 +222,26 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Area", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Areas");
+                });
+
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Contrato", b =>
                 {
                     b.Property<int>("Id")
@@ -233,16 +253,19 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<bool>("Activo")
                         .HasColumnType("bit");
 
+                    b.Property<int>("AreaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("CodigoContrato")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ContratoUsuarioId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EmpresaId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("InicioAcreditacion")
                         .HasColumnType("datetime2");
@@ -250,19 +273,52 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<DateTime>("InicioContrato")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("TerminoAcreditacion")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("TerminoContrato")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UsuarioId")
+                    b.HasKey("Id");
+
+                    b.HasIndex("AreaId");
+
+                    b.HasIndex("ContratoUsuarioId");
+
+                    b.ToTable("Contratos");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.ContratoUsuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmpresaId");
+                    b.ToTable("ContratoUsuario");
+                });
 
-                    b.HasIndex("UsuarioId");
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.DocumentoClasificacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.ToTable("Contratos");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DocumentosClasificacion");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Empresa", b =>
@@ -276,6 +332,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<bool>("Activo")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("EstadoAcreditacionId")
                         .HasColumnType("int");
 
@@ -286,6 +345,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<string>("Rut")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -325,6 +387,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -359,6 +424,127 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.ToTable("IngresosVisitas");
                 });
 
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.ItemCarpetaArranque", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Evidencia")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Indice")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Obligatorio")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ItemsCarpetaArranque");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.ProtocoloIngreso", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProtocolosIngresos");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroCovidAccesos", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RegistroCovidFormularioId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Temperatura")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RegistroCovidFormularioId");
+
+                    b.ToTable("RegistrosCovidAccesos");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroCovidFormulario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Apellido")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Empresa")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("HaTenidoContactoEstrecho")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HaTenidoSintomas")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rut")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sintomas")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RegistrosCovidFormularios");
+                });
+
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TipoDocumentoAcreditacion", b =>
                 {
                     b.Property<int>("Id")
@@ -367,11 +553,28 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("DocumentoClasificacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemCarpetaArranqueId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Obligatorio")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PerteneA")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("DocumentoClasificacionId");
+
+                    b.HasIndex("ItemCarpetaArranqueId");
 
                     b.ToTable("TiposDocumentosAcreditacion");
                 });
@@ -463,9 +666,8 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Area")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("AreaId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Comentario")
                         .IsRequired()
@@ -495,6 +697,8 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AreaId");
 
                     b.HasIndex("UsuarioId");
 
@@ -554,21 +758,21 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Contrato", b =>
                 {
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Empresa", "Empresa")
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Area", "Area")
                         .WithMany()
-                        .HasForeignKey("EmpresaId")
+                        .HasForeignKey("AreaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Usuario", "Usuario")
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.ContratoUsuario", "ContratoUsuario")
                         .WithMany()
-                        .HasForeignKey("UsuarioId")
+                        .HasForeignKey("ContratoUsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Empresa");
+                    b.Navigation("Area");
 
-                    b.Navigation("Usuario");
+                    b.Navigation("ContratoUsuario");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Empresa", b =>
@@ -612,6 +816,36 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Navigation("Visita");
                 });
 
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroCovidAccesos", b =>
+                {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.RegistroCovidFormulario", "RegistroCovidFormulario")
+                        .WithMany()
+                        .HasForeignKey("RegistroCovidFormularioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RegistroCovidFormulario");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TipoDocumentoAcreditacion", b =>
+                {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.DocumentoClasificacion", "DocumentoClasificacion")
+                        .WithMany()
+                        .HasForeignKey("DocumentoClasificacionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.ItemCarpetaArranque", "ItemCarpetaArranque")
+                        .WithMany()
+                        .HasForeignKey("ItemCarpetaArranqueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DocumentoClasificacion");
+
+                    b.Navigation("ItemCarpetaArranque");
+                });
+
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Usuario", b =>
                 {
                     b.HasOne("PlatAcreditacionTPCBackend.Entidades.Empresa", "Empresa")
@@ -633,11 +867,19 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Visita", b =>
                 {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Area", "Area")
+                        .WithMany()
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PlatAcreditacionTPCBackend.Entidades.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Area");
 
                     b.Navigation("Usuario");
                 });

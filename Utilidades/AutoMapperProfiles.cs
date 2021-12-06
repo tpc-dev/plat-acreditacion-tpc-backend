@@ -10,6 +10,10 @@ namespace PlatAcreditacionTPCBackend.Utilidades
         {
             CreateMap<NuevoUsuarioDTO, Usuario>();
             CreateMap<IngresoVisitaDTO, IngresoVisitas>();
+            CreateMap<NuevoTipoRolDTO, TipoRol>();
+            CreateMap<NuevaEmpresaDTO, Empresa>();
+            CreateMap<NuevoEstadoAcreditacionDTO, EstadoAcreditacion>();
+            CreateMap<NuevaAreaDTO, Area>();
         }
     }
 }

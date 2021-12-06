@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PlatAcreditacionTPCBackend.DTOs;
 using PlatAcreditacionTPCBackend.Entidades;
 
 namespace PlatAcreditacionTPCBackend.Controllers
@@ -26,9 +27,10 @@ namespace PlatAcreditacionTPCBackend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(EstadoAcreditacion estadoAcreditacion)
+        public async Task<ActionResult> Post(NuevoEstadoAcreditacionDTO nuevoEstadoAcreditacionDTO)
         {
-            context.Add(estadoAcreditacion);
+            var nuevoEstadoAcreditacionDTOMapped = mapper.Map<EstadoAcreditacion>(nuevoEstadoAcreditacionDTO);
+            context.Add(nuevoEstadoAcreditacionDTOMapped);
             await context.SaveChangesAsync();
             return Ok();
         }

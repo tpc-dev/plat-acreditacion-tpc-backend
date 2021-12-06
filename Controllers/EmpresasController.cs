@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PlatAcreditacionTPCBackend.DTOs;
 using PlatAcreditacionTPCBackend.Entidades;
 
 namespace PlatAcreditacionTPCBackend.Controllers
@@ -43,9 +44,26 @@ namespace PlatAcreditacionTPCBackend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(Empresa empresa)
+        public async Task<ActionResult> Post(NuevaEmpresaDTO nuevaEmpresaDTO)
         {
-            context.Add(empresa);
+            var existeEstadoAcreditacion = await context.EstadosAcreditacion.AnyAsync(estado => estado.Id == nuevaEmpresaDTO.EstadoAcreditacionId);
+
+            if (!existeEstadoAcreditacion)
+            {
+                return BadRequest($"No existe estado de acreditacion con id {nuevaEmpresaDTO.EstadoAcreditacionId}");
+            }
+
+            var existeEmpresaRut = await context.Empresas.AnyAsync(empresa=> empresa.Rut == nuevaEmpresaDTO.Rut);
+
+            if (existeEmpresaRut)
+            {
+                return BadRequest($"Ya existe empresa con Rut {nuevaEmpresaDTO.Rut}");
+            }
+
+            var nuevaEmpresaDTOMapped = mapper.Map<Empresa>(nuevaEmpresaDTO);
+            nuevaEmpresaDTOMapped.CreatedAt = DateTime.Now;
+            nuevaEmpresaDTOMapped.UpdatedAt = DateTime.Now;
+            context.Add(nuevaEmpresaDTOMapped);
             await context.SaveChangesAsync();
             return Ok();
         }

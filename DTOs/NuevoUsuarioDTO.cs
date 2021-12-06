@@ -24,5 +24,7 @@ namespace PlatAcreditacionTPCBackend.DTOs
         public int TipoRolId { get; set; }
         [Required]
         public bool Activo { get; set; }
+        [Required]
+        public int EmpresaId { get; set; }
     }
 }

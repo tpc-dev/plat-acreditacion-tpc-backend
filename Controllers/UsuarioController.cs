@@ -25,7 +25,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
         }
 
         [HttpGet("tiporol/{id:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+       // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<List<Usuario>>> GetUsuariosPorRol(int id)
         {
             var existeRol = await context.TipoRoles.AnyAsync(x => x.Id == id);
@@ -34,7 +34,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 return NotFound("El id de rol no existe");
             }
 
-            return await context.Usuarios.Where(x => x.TipoRolId == id).ToListAsync();
+            return await context.Usuarios.Include(x => x.TipoRol).Where(x => x.TipoRolId == id).ToListAsync();
         }
 
         [HttpGet("{id:int}/empresa")]
@@ -49,6 +49,13 @@ namespace PlatAcreditacionTPCBackend.Controllers
 
             return await context.Empresas.Include(x=>x.EstadoAcreditacion).Where(x => x.Id == existeUsuario.EmpresaId).FirstOrDefaultAsync();
         }
+
+
+        //[HttpGet("tipo-rol/{tipoRol:int}")]
+        //public async Task<ActionResult<Usuario>> GetUsuarioPorTipoRol(int tipoRol)
+        //{
+        //    return await context.Usuarios.Include(x => x.TipoRol).FirstOrDefaultAsync(x => x.TipoRolId == tipoRol);
+        //}
 
 
         [HttpGet("{id:int}")]
@@ -91,7 +98,9 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return Ok();
         }
 
-
+        /* 
+         * Actualizar datos usuario desde la plataforma web
+         */
         [HttpPut("usuarioplataforma/{idUsuario:int}")]
         public async Task<ActionResult> ActualizarUsuario(ActualizarUsuarioPlataformaDTO actualizarUsuarioPlataformaDTO, int idUsuario)
         {

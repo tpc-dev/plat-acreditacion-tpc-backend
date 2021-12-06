@@ -16,6 +16,7 @@ public class ApplicationDbContext : IdentityDbContext
     }
 
     public DbSet<Usuario> Usuarios { get; set; }
+    public DbSet<Area> Areas { get; set; }
     public DbSet<Visita> Visitas { get; set; }
     public DbSet<IngresoVisitas> IngresosVisitas { get; set; }
     public DbSet<TipoRol> TipoRoles { get; set; }
@@ -28,6 +29,7 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<ProtocoloIngreso> ProtocolosIngresos { get; set; }
     public DbSet<RegistroCovidFormulario> RegistrosCovidFormularios { get; set; }
     public DbSet<RegistroCovidAccesos> RegistrosCovidAccesos { get; set; }
-
+    public DbSet<DocumentoClasificacion> DocumentosClasificacion { get; set; }
+    public DbSet<Gerencia> Gerencias { get; set; }
 
 }

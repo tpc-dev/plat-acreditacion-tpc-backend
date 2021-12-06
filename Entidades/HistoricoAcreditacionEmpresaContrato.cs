@@ -2,22 +2,17 @@
 
 namespace PlatAcreditacionTPCBackend.Entidades
 {
-    public class Empresa
+    public class HistoricoAcreditacionEmpresaContrato
     {
         [Required]
         public int Id { get; set; }
         [Required]
-        public string Rut { get; set; }
-        [Required]
-        public string RazonSocial { get; set; }
+        public int EmpresaContratoId { get; set; }
+        public EmpresaContrato EmpresaContrato { get; set; }
         [Required]
         public int EstadoAcreditacionId { get; set; }
         public EstadoAcreditacion EstadoAcreditacion { get; set; }
         [Required]
-        public bool Activo { get; set; }
-        [Required]
-        public DateTime CreatedAt { get; set; }
-        [Required]
-        public DateTime UpdatedAt { get; set; }
+        public DateTime Fecha { get; set; }
     }
 }

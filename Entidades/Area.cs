@@ -2,9 +2,13 @@
 
 namespace PlatAcreditacionTPCBackend.Entidades
 {
-    public class ContratoUsuario
+    public class Area
     {
         [Required]
         public int Id { get; set; }
+        [Required]
+        public string Nombre { get; set; }
+        [Required]
+        public bool Activo { get; set; }
     }
 }
