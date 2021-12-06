@@ -125,7 +125,9 @@ public class Startup
         #region CORS
         app.UseCors(options =>
         {
-            options.WithOrigins("http://localhost:4200");
+            //options.WithOrigins("http://localhost:4200");
+            options.WithOrigins(Configuration["API_HOST1"]);
+            options.WithOrigins(Configuration["API_HOST2"]);
             options.AllowAnyMethod();
             options.AllowAnyHeader();
         });
