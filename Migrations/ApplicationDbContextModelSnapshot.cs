@@ -237,7 +237,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Areas");
+                    b.ToTable("Areas", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Contrato", b =>
@@ -283,7 +283,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasIndex("EtapaCreacionContratoId");
 
-                    b.ToTable("Contratos");
+                    b.ToTable("Contratos", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.DocumentoClasificacion", b =>
@@ -303,7 +303,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DocumentosClasificacion");
+                    b.ToTable("DocumentosClasificacion", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Empresa", b =>
@@ -338,7 +338,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasIndex("EstadoAcreditacionId");
 
-                    b.ToTable("Empresas");
+                    b.ToTable("Empresas", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EmpresaTipoDocumentoAcreditacion", b =>
@@ -361,7 +361,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasIndex("TipoDocumentoAcreditacionId");
 
-                    b.ToTable("EmpresaTiposDocumentosAcreditacion");
+                    b.ToTable("EmpresaTiposDocumentosAcreditacion", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EstadoAcreditacion", b =>
@@ -381,7 +381,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EstadosAcreditacion");
+                    b.ToTable("EstadosAcreditacion", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EtapaCreacionContrato", b =>
@@ -404,7 +404,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EtapasCreacionContrato");
+                    b.ToTable("EtapasCreacionContrato", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Gerencia", b =>
@@ -424,7 +424,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Gerencias");
+                    b.ToTable("Gerencias", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.IngresoVisitas", b =>
@@ -449,7 +449,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasIndex("VisitaId");
 
-                    b.ToTable("IngresosVisitas");
+                    b.ToTable("IngresosVisitas", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.ItemCarpetaArranque", b =>
@@ -480,7 +480,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ItemsCarpetaArranque");
+                    b.ToTable("ItemsCarpetaArranque", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.ProtocoloIngreso", b =>
@@ -504,7 +504,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProtocolosIngresos");
+                    b.ToTable("ProtocolosIngresos", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroCovidAccesos", b =>
@@ -528,7 +528,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasIndex("RegistroCovidFormularioId");
 
-                    b.ToTable("RegistrosCovidAccesos");
+                    b.ToTable("RegistrosCovidAccesos", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroCovidFormulario", b =>
@@ -570,7 +570,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RegistrosCovidFormularios");
+                    b.ToTable("RegistrosCovidFormularios", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TipoDocumentoAcreditacion", b =>
@@ -604,7 +604,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasIndex("ItemCarpetaArranqueId");
 
-                    b.ToTable("TiposDocumentosAcreditacion");
+                    b.ToTable("TiposDocumentosAcreditacion", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TipoRol", b =>
@@ -621,7 +621,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TipoRoles");
+                    b.ToTable("TipoRoles", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Usuario", b =>
@@ -679,7 +679,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasIndex("TipoRolId");
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("Usuarios", (string)null);
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Visita", b =>
@@ -730,7 +730,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Visitas");
+                    b.ToTable("Visitas", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

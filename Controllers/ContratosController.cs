@@ -110,7 +110,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 return NotFound("Contrato No encontrado");
             }
 
-            var etapaCreacion = await context.EtapasCreacionContrato.FirstOrDefaultAsync(etapa => etapa.id == idEtapa);
+            var etapaCreacion = await context.EtapasCreacionContrato.FirstOrDefaultAsync(etapa => etapa.Id == idEtapa);
 
             if (etapaCreacion == null)
             {

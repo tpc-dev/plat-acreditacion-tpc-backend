@@ -32,6 +32,6 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<DocumentoClasificacion> DocumentosClasificacion { get; set; }
     public DbSet<EtapaCreacionContrato> EtapasCreacionContrato { get; set; }
     public DbSet<Gerencia> Gerencias { get; set; }
-    public DbSet<HistoricoAcreditacionCarpetaArranque> HistoricosAcreditacionCarpetaArranque { get; set; }
+    public DbSet<HistoricoAcreditacionEmpresaContrato> HistoricosAcreditacionEmpresaContratos { get; set; }
 
 }
