@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlatAcreditacionTPCBackend.Entidades;
+using System.Net;
 
 namespace PlatAcreditacionTPCBackend.Controllers
 {
@@ -22,12 +25,57 @@ namespace PlatAcreditacionTPCBackend.Controllers
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<List<Contrato>>> Get()
         {
-            return await context.Contratos.ToListAsync();
+            return await context.Contratos.Include(contrato => contrato.EtapaCreacionContrato).ToListAsync();
+        }
+
+        [HttpGet("existe/{codigoContrato}")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<bool>> GetContratoYaExiste(string codigoContrato)
+        {
+
+            bool existe = await context.Contratos.AnyAsync(contratoS => contratoS.CodigoContrato == codigoContrato);
+            return existe;
+        } 
+        
+        [HttpGet("paso-uno-completado")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<bool>> GetContratoPasoUnoCompletado(string codigoContrato)
+        {   
+
+
+            bool existe = await context.Contratos.AnyAsync(contratoS => contratoS.CodigoContrato == codigoContrato);
+            return existe;
+        }
+        
+        [HttpGet("paso-dos-completado")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<bool>> GetContratoPasoDosCompletado(string codigoContrato)
+        {
+
+            bool existe = await context.Contratos.AnyAsync(contratoS => contratoS.CodigoContrato == codigoContrato);
+            return existe;
+        }
+        
+        [HttpGet("paso-tres-completado")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<bool>> GetContratoPasoTresCompletado(string codigoContrato)
+        {
+
+            bool existe = await context.Contratos.AnyAsync(contratoS => contratoS.CodigoContrato == codigoContrato);
+            return existe;
         }
 
         [HttpPost]
         public async Task<ActionResult> Post(Contrato contrato)
         {
+
+            //EmpresaContrato empresaContrato = new EmpresaContrato
+            //{
+            //    ContratoId = contrato.Id,
+            //    EmpresaId  = contrato.
+                
+            //};
+
             context.Add(contrato);
             await context.SaveChangesAsync();
             return Ok();
@@ -47,6 +95,30 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 return NotFound();
             }
 
+            context.Update(contrato);
+            await context.SaveChangesAsync();
+            return Ok();
+        } 
+        
+        [HttpPut("cambiar-etapa-creacion/{id:int}")]
+        public async Task<ActionResult> CambiarEtapaCreacion(int idEtapa, int id)
+        {
+
+            var contrato = await context.Contratos.FirstOrDefaultAsync(contratoS => contratoS.Id == id);
+            if (contrato == null)
+            {
+                return NotFound("Contrato No encontrado");
+            }
+
+            var etapaCreacion = await context.EtapasCreacionContrato.FirstOrDefaultAsync(etapa => etapa.id == idEtapa);
+
+            if (etapaCreacion == null)
+            {
+                return NotFound("Orden No encontrada");
+            }
+
+            contrato.EtapaCreacionContratoId = idEtapa;
+            context.Entry(contrato).State = EntityState.Modified;
             context.Update(contrato);
             await context.SaveChangesAsync();
             return Ok();

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlatAcreditacionTPCBackend;
 
@@ -11,9 +12,10 @@ using PlatAcreditacionTPCBackend;
 namespace PlatAcreditacionTPCBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211214203409_contratocambiado")]
+    partial class contratocambiado
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,7 +264,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EtapaCreacionContratoId")
+                    b.Property<int>("GerenciaId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("InicioAcreditacion")
@@ -281,7 +283,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.HasIndex("EtapaCreacionContratoId");
+                    b.HasIndex("GerenciaId");
 
                     b.ToTable("Contratos");
                 });
@@ -382,29 +384,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EstadosAcreditacion");
-                });
-
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EtapaCreacionContrato", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("Activo")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Orden")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EtapasCreacionContrato");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Gerencia", b =>
@@ -792,15 +771,15 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.EtapaCreacionContrato", "EtapaCreacionContrato")
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Gerencia", "Gerencia")
                         .WithMany()
-                        .HasForeignKey("EtapaCreacionContratoId")
+                        .HasForeignKey("GerenciaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Area");
 
-                    b.Navigation("EtapaCreacionContrato");
+                    b.Navigation("Gerencia");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Empresa", b =>

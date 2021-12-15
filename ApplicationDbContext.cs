@@ -30,6 +30,8 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<RegistroCovidFormulario> RegistrosCovidFormularios { get; set; }
     public DbSet<RegistroCovidAccesos> RegistrosCovidAccesos { get; set; }
     public DbSet<DocumentoClasificacion> DocumentosClasificacion { get; set; }
+    public DbSet<EtapaCreacionContrato> EtapasCreacionContrato { get; set; }
     public DbSet<Gerencia> Gerencias { get; set; }
+    public DbSet<HistoricoAcreditacionCarpetaArranque> HistoricosAcreditacionCarpetaArranque { get; set; }
 
 }
