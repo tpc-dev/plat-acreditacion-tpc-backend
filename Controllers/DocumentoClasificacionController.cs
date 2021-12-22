@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PlatAcreditacionTPCBackend.DTOs;
 using PlatAcreditacionTPCBackend.Entidades;
 
 namespace PlatAcreditacionTPCBackend.Controllers
@@ -9,9 +11,11 @@ namespace PlatAcreditacionTPCBackend.Controllers
     public class DocumentoClasificacionController :ControllerBase
     {
         private readonly ApplicationDbContext context;
-        public DocumentoClasificacionController(ApplicationDbContext context)
+        private readonly IMapper mapper;
+        public DocumentoClasificacionController(ApplicationDbContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -19,6 +23,13 @@ namespace PlatAcreditacionTPCBackend.Controllers
         public async Task<ActionResult<List<DocumentoClasificacion>>> Get()
         {
             return await context.DocumentosClasificacion.ToListAsync();
+        }
+
+        [HttpGet("activos")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<DocumentoClasificacion>>> GetActivos()
+        {
+            return await context.DocumentosClasificacion.Where(tipoDocumento => tipoDocumento.Activo == true).ToListAsync();
         }
 
 
@@ -48,9 +59,10 @@ namespace PlatAcreditacionTPCBackend.Controllers
         //}
 
         [HttpPost]
-        public async Task<ActionResult> Post(DocumentoClasificacion documentoClasificacion)
+        public async Task<ActionResult> Post(NuevoDocumentoClasificacionDTO nuevoDocumentoClasificacionDTO)
         {
-            context.Add(documentoClasificacion);
+            var nuevoDocumentoClasificacionMapped = mapper.Map<DocumentoClasificacion>(nuevoDocumentoClasificacionDTO);
+            context.Add(nuevoDocumentoClasificacionMapped);
             await context.SaveChangesAsync();
             return Ok();
         }

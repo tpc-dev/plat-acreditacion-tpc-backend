@@ -9,14 +9,9 @@ namespace PlatAcreditacionTPCBackend.Entidades
         [Required]
         public DateTime FechaInicio { get; set; }
         [Required]
-        public int HistoricoAcreditacionCarpetaArranqueId { get; set; }
-        public HistoricoAcreditacionCarpetaArranque HistoricoAcreditacionCarpetaArranque { get; set; }
-        [Required]
         public int ContratoId { get; set; }
         public Contrato Contrato { get; set; }
-        [Required]
-        public int ItemCarpetaArranqueId { get; set; }
-        public ItemCarpetaArranque ItemCarpetaArranque { get; set; }
+        public List<ItemCarpetaArranqueCarpetaArranque> ItemsCarpetaArranqueCarpetaArranque { get; set; }
         [Required]
         public DateTime CreatedAt { get; set; }
         [Required]

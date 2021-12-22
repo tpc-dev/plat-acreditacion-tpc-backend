@@ -15,6 +15,10 @@ namespace PlatAcreditacionTPCBackend.Utilidades
             CreateMap<NuevoEstadoAcreditacionDTO, EstadoAcreditacion>();
             CreateMap<NuevaAreaDTO, Area>();
             CreateMap<NuevaGerenciaDTO, Gerencia>();
+            CreateMap<NuevoContratoDTO, Contrato>();
+            CreateMap<NuevaEmpresaContratoDTO, EmpresaContrato>();
+            CreateMap<NuevoDocumentoClasificacionDTO, DocumentoClasificacion>();
+            CreateMap<NuevoCarpetaArranqueDTO, CarpetaArranque>();
         }
     }
 }

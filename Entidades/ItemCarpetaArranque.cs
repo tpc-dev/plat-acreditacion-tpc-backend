@@ -15,5 +15,7 @@ namespace PlatAcreditacionTPCBackend.Entidades
         [Required]
         public bool Obligatorio { get; set; }
         public bool Activo { get; set; }
+        public List<TipoDocumentoAcreditacion> TiposDocumentosAcreditacion { get; set; }
+        public List<ItemCarpetaArranqueCarpetaArranque> ItemsCarpetaArranqueCarpetaArranque { get; set; }
     }
 }

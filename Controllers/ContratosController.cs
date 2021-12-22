@@ -3,8 +3,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using PlatAcreditacionTPCBackend.DTOs;
 using PlatAcreditacionTPCBackend.Entidades;
+using PlatAcreditacionTPCBackend.Models;
 using System.Net;
+using System.Text.Json;
 
 namespace PlatAcreditacionTPCBackend.Controllers
 {
@@ -28,6 +32,15 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return await context.Contratos.Include(contrato => contrato.EtapaCreacionContrato).ToListAsync();
         }
 
+        [HttpGet("{idContrato}/carpeta-arranque")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<CarpetaArranque>> GetCarpetaArranqueByContratoId()
+        {   
+                //.ForEachAsync(carpeta => carpeta.ItemsCarpetaArranqueCarpetaArranque.FirstOrDefault())
+            return await context.CarpetasArranques.FirstOrDefaultAsync();
+        }
+
+
         [HttpGet("existe/{codigoContrato}")]
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<bool>> GetContratoYaExiste(string codigoContrato)
@@ -37,48 +50,146 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return existe;
         } 
         
-        [HttpGet("paso-uno-completado")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<bool>> GetContratoPasoUnoCompletado(string codigoContrato)
+        [HttpGet("historico")]
+      //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<HistoricoAcreditacionEmpresaContrato>>> GetContratoPasoUnoCompletado(string codigoContrato)
         {   
 
-
-            bool existe = await context.Contratos.AnyAsync(contratoS => contratoS.CodigoContrato == codigoContrato);
-            return existe;
-        }
-        
-        [HttpGet("paso-dos-completado")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<bool>> GetContratoPasoDosCompletado(string codigoContrato)
-        {
-
-            bool existe = await context.Contratos.AnyAsync(contratoS => contratoS.CodigoContrato == codigoContrato);
-            return existe;
-        }
-        
-        [HttpGet("paso-tres-completado")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<bool>> GetContratoPasoTresCompletado(string codigoContrato)
-        {
-
-            bool existe = await context.Contratos.AnyAsync(contratoS => contratoS.CodigoContrato == codigoContrato);
-            return existe;
+            return await context.HistoricosAcreditacionEmpresaContratos.ToListAsync();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Post(Contrato contrato)
+
+        [HttpPost("completar-paso-uno")]
+        //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult> CrearContratoPasoUno(NuevaEmpresaContratoDTO nuevaEmpresaContratoDTO)
         {
+            
+            bool existeContrato = await context.Contratos.AnyAsync(contrato => contrato.Id == nuevaEmpresaContratoDTO.ContratoId);
 
-            //EmpresaContrato empresaContrato = new EmpresaContrato
-            //{
-            //    ContratoId = contrato.Id,
-            //    EmpresaId  = contrato.
-                
-            //};
+            if (!existeContrato)
+            {
+                return NotFound($"Contrado no encontrado {nuevaEmpresaContratoDTO.ContratoId}");
+            }
 
-            context.Add(contrato);
+            bool existeEmpresa = await context.Empresas.AnyAsync(empresa=> empresa.Id == nuevaEmpresaContratoDTO.EmpresaId);
+
+            if (!existeEmpresa)
+            {
+                return NotFound($"Empresa no encontrado {nuevaEmpresaContratoDTO.EmpresaId}");
+            }
+
+            nuevaEmpresaContratoDTO.FechaCreacion = DateTime.Now;
+
+            var nuevaEmpresaContratoMapeado = mapper.Map<EmpresaContrato>(nuevaEmpresaContratoDTO);
+            context.Add(nuevaEmpresaContratoMapeado);
             await context.SaveChangesAsync();
             return Ok();
+        }
+
+        [HttpGet("{id:int}/contrato-usuarios")]
+        public async Task<ActionResult<List<ContratoUsuario>>> ObtenerUsuariosPorContratoId(int id)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(contrato => contrato.Id == id);
+
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+            List<ContratoUsuario> contratoUsuarios = await context.ContratosUsuarios.Include(contratoUsuario=>contratoUsuario.Usuario)
+                .Include(contratoUsuario => contratoUsuario.Usuario.TipoRol)
+                .Where(contratoUsuario => contratoUsuario.ContratoId == id).ToListAsync();
+
+            return contratoUsuarios;
+        }
+
+        [HttpPost("completar-paso-dos")]
+        public async Task<ActionResult> CrearContratoPasoDos(NuevoContratoUsuarioDTO nuevoContratoUsuario)
+        {   
+
+            ContratoUsuario contratoUsuarioADCTPC1 = new ContratoUsuario
+            {
+                ContratoId      = nuevoContratoUsuario.contratoId,
+                UsuarioId       = nuevoContratoUsuario.adctpc1Id,
+                GerenciaId      = nuevoContratoUsuario.gerenciaId,
+                AreaId          = nuevoContratoUsuario.areaId,
+                FechaCreacion   = DateTime.Now
+            };
+
+            // SI EXISTE UN SEGUNDO ADCTPC ASOCIADO AL CONTRATO
+            if (nuevoContratoUsuario.adctpc2Id>0)
+            {
+                ContratoUsuario contratoUsuarioADCTPC2 = new ContratoUsuario
+                {
+                    ContratoId    = nuevoContratoUsuario.contratoId,
+                    UsuarioId     = nuevoContratoUsuario.adctpc2Id,
+                    GerenciaId    = nuevoContratoUsuario.gerencia2Id,
+                    AreaId        = nuevoContratoUsuario.area2Id,
+                    FechaCreacion = DateTime.Now
+                };
+
+                context.Add(contratoUsuarioADCTPC2);
+            }
+
+            // LOS ADIMISTRADORES DE CONTRATO EXTERNOS TIENEN UN AREA Y GERENCIA FIJO DE NOMBRE EXTERNOS
+
+            Gerencia idGerenciaExternos = await context.Gerencias.FirstOrDefaultAsync(gerencia => gerencia.Nombre == "Externos");    
+            Area idAreaExternos = await context.Areas.FirstOrDefaultAsync(area => area.Nombre == "Externos");    
+
+            ContratoUsuario contratoUsuarioADCEECC = new ContratoUsuario
+            {
+                ContratoId    = nuevoContratoUsuario.contratoId,
+                UsuarioId     = nuevoContratoUsuario.adceeccId,
+                FechaCreacion = DateTime.Now,
+                AreaId        = idAreaExternos.Id,
+                GerenciaId    = idGerenciaExternos.Id
+            };
+
+            context.Add(contratoUsuarioADCTPC1);
+            context.Add(contratoUsuarioADCEECC);
+            await context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpPost("completar-paso-tres")]
+        public async Task<ActionResult> CrearContratoPasoTres(CarpetaArranquePasoTres carpetaArranquePasoTres)
+        {   
+            foreach (var indice in carpetaArranquePasoTres.ListIdItemsCarpetaArranque)
+            {
+                ItemCarpetaArranqueCarpetaArranque itemCarpetaArranqueCarpetaArranque = new ItemCarpetaArranqueCarpetaArranque
+                {
+                    CarpetaArranqueId = carpetaArranquePasoTres.CarpetaArranqueId,
+                    ItemCarpetaArranqueId = indice,
+                    Obligatorio = true
+                };
+
+                context.Add(itemCarpetaArranqueCarpetaArranque);
+            }
+
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpGet("{id:int}/empresas")]
+        public async Task<ActionResult<List<EmpresaContrato>>> GetEmpresasPorContratoId(int id)
+        {
+            bool existe = await context.Contratos.AnyAsync(x => x.Id == id);
+            if (!existe)
+            {
+                return NotFound();
+            }
+
+            return await context.EmpresasContratos.Include(x=> x.ListadoHistoricoAcreditacionEmpresaContrato).Include(x => x.Empresa).Include(x=> x.Contrato).Where(x => x.ContratoId == id).ToListAsync();
+        }
+
+
+        [HttpPost]
+        public async Task<ActionResult<Contrato>> Post(Contrato contrato)
+        {
+            context.Add(contrato);
+            await context.SaveChangesAsync();
+            return Ok(contrato);
         }
 
         [HttpPut("{id:int}")]
@@ -98,9 +209,27 @@ namespace PlatAcreditacionTPCBackend.Controllers
             context.Update(contrato);
             await context.SaveChangesAsync();
             return Ok();
-        } 
-        
-        [HttpPut("cambiar-etapa-creacion/{id:int}")]
+        }
+
+        [HttpGet("etapa-creacion/{id:int}")]
+        public async Task<ActionResult<List<Contrato>>> GetContratosPorOrden(int id)
+        {
+            
+            bool existeOrden = await context.EtapasCreacionContrato.AnyAsync(etapa => etapa.Id== id);
+            
+            if (!existeOrden)
+            {
+                return NotFound();
+            }
+
+            return await context.Contratos
+                .Include(contrato => contrato.EtapaCreacionContrato)
+                .Include(contrato => contrato.Area)
+                .Include(contrato => contrato.EmpresaContrato.Empresa)
+                .Where(contrato => contrato.EtapaCreacionContratoId == id).ToListAsync();
+        }
+
+        [HttpPut("{id:int}/cambiar-etapa-creacion/{idEtapa:int}")]
         public async Task<ActionResult> CambiarEtapaCreacion(int idEtapa, int id)
         {
 
@@ -121,7 +250,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
             context.Entry(contrato).State = EntityState.Modified;
             context.Update(contrato);
             await context.SaveChangesAsync();
-            return Ok();
+            return Ok(contrato);
         }
 
         [HttpDelete("{id:int}")]

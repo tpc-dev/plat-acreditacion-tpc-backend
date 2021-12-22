@@ -62,6 +62,18 @@ namespace PlatAcreditacionTPCBackend.Controllers
         public async Task<ActionResult<Usuario>> Get(int id)
         {
             return await context.Usuarios.Include(x => x.TipoRol).FirstOrDefaultAsync(x => x.Id == id);
+        } 
+        
+        [HttpGet("{id:int}/contratos")]
+        public async Task<ActionResult<List<ContratoUsuario>>> GetContratosUsuarioByUsuarioId(int id)
+        {
+            bool existe = await context.Usuarios.AnyAsync(x =>  x.Id == id);
+            if (!existe)
+            {
+                return NotFound();
+            }
+
+            return await context.ContratosUsuarios.Include(x=>x.Contrato).Where(x => x.UsuarioId == id).ToListAsync();
         }
 
         [HttpPost]

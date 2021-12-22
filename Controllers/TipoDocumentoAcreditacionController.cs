@@ -46,7 +46,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
             }
             
 
-            return await context.TiposDocumentosAcreditacion.Where(x=> x.ItemCarpetaArranqueId == id).ToListAsync();
+            return await context.TiposDocumentosAcreditacion.Include(tipodoc=> tipodoc.DocumentoClasificacion).Where(x=> x.ItemCarpetaArranqueId == id).ToListAsync();
         }
 
         [HttpPost]

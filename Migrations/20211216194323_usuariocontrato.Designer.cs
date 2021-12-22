@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlatAcreditacionTPCBackend;
 
@@ -11,9 +12,10 @@ using PlatAcreditacionTPCBackend;
 namespace PlatAcreditacionTPCBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211216194323_usuariocontrato")]
+    partial class usuariocontrato
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,33 +240,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Areas");
-                });
-
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.CarpetaArranque", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ContratoId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("FechaInicio")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContratoId");
-
-                    b.ToTable("CarpetasArranques");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Contrato", b =>
@@ -589,24 +564,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.ToTable("ItemsCarpetaArranque");
                 });
 
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.ItemCarpetaArranqueCarpetaArranque", b =>
-                {
-                    b.Property<int>("ItemCarpetaArranqueId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CarpetaArranqueId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Obligatorio")
-                        .HasColumnType("bit");
-
-                    b.HasKey("ItemCarpetaArranqueId", "CarpetaArranqueId");
-
-                    b.HasIndex("CarpetaArranqueId");
-
-                    b.ToTable("ItemsCarpetasArranqueCarpetasArranque");
-                });
-
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.ProtocoloIngreso", b =>
                 {
                     b.Property<int>("Id")
@@ -717,6 +674,10 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.Property<bool>("Obligatorio")
                         .HasColumnType("bit");
+
+                    b.Property<string>("PerteneA")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -904,17 +865,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.CarpetaArranque", b =>
-                {
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Contrato", "Contrato")
-                        .WithMany()
-                        .HasForeignKey("ContratoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Contrato");
-                });
-
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Contrato", b =>
                 {
                     b.HasOne("PlatAcreditacionTPCBackend.Entidades.Area", "Area")
@@ -1048,25 +998,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Navigation("Visita");
                 });
 
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.ItemCarpetaArranqueCarpetaArranque", b =>
-                {
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.CarpetaArranque", "CarpetaArranque")
-                        .WithMany("ItemsCarpetaArranqueCarpetaArranque")
-                        .HasForeignKey("CarpetaArranqueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.ItemCarpetaArranque", "ItemCarpetaArranque")
-                        .WithMany("ItemsCarpetaArranqueCarpetaArranque")
-                        .HasForeignKey("ItemCarpetaArranqueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CarpetaArranque");
-
-                    b.Navigation("ItemCarpetaArranque");
-                });
-
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroCovidAccesos", b =>
                 {
                     b.HasOne("PlatAcreditacionTPCBackend.Entidades.RegistroCovidFormulario", "RegistroCovidFormulario")
@@ -1087,7 +1018,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .IsRequired();
 
                     b.HasOne("PlatAcreditacionTPCBackend.Entidades.ItemCarpetaArranque", "ItemCarpetaArranque")
-                        .WithMany("TiposDocumentosAcreditacion")
+                        .WithMany()
                         .HasForeignKey("ItemCarpetaArranqueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1135,11 +1066,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.CarpetaArranque", b =>
-                {
-                    b.Navigation("ItemsCarpetaArranqueCarpetaArranque");
-                });
-
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Contrato", b =>
                 {
                     b.Navigation("EmpresaContrato");
@@ -1153,13 +1079,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EmpresaContrato", b =>
                 {
                     b.Navigation("ListadoHistoricoAcreditacionEmpresaContrato");
-                });
-
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.ItemCarpetaArranque", b =>
-                {
-                    b.Navigation("ItemsCarpetaArranqueCarpetaArranque");
-
-                    b.Navigation("TiposDocumentosAcreditacion");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Visita", b =>

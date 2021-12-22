@@ -19,7 +19,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<List<ItemCarpetaArranque>>> Get()
         {
-            return await context.ItemsCarpetaArranque.ToListAsync();
+            return await context.ItemsCarpetaArranque.Include(itemCarpetaArranque => itemCarpetaArranque.TiposDocumentosAcreditacion).ToListAsync();
         }
 
         // TODO verificar rol asignado al token 

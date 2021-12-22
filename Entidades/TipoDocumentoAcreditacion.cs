@@ -8,8 +8,6 @@ namespace PlatAcreditacionTPCBackend.Entidades
         public int Id { get; set; }
         [Required]
         public string Nombre { get; set; }
-        [Required]
-        public string PerteneA { get; set; }
         public bool Obligatorio { get; set; }
         [Required]
         public int ItemCarpetaArranqueId { get; set; }

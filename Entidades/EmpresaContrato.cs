@@ -5,8 +5,6 @@ namespace PlatAcreditacionTPCBackend.Entidades
     public class EmpresaContrato
     {
         [Required]
-        public int Id { get; set; }
-        [Required]
         public int EmpresaId { get; set; }
         public Empresa Empresa { get; set; }
         [Required]
