@@ -58,6 +58,24 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return await context.HistoricosAcreditacionEmpresaContratos.ToListAsync();
         }
 
+        [HttpGet("{contratoId}/empresa-contratadas")]
+        //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<EmpresaContrato>>> GetEmpresasContratadaPorContradoId(int contratoId)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x=>x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+            return await context.EmpresasContratos
+                .Where(ec=> ec.ContratoId == contratoId)
+                .Include(ec=>ec.Empresa)
+                .Include(ec=>ec.Contrato)
+                .Include(ec=>ec.ListadoHistoricoAcreditacionEmpresaContrato)
+                .ToListAsync();
+        }
+
 
         [HttpPost("completar-paso-uno")]
         //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -102,6 +120,73 @@ namespace PlatAcreditacionTPCBackend.Controllers
 
             return contratoUsuarios;
         }
+
+        [HttpGet("{contratoId}/cargos")]
+        //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<Cargo>>> GetCargosContratadaPorContradoId(int contratoId)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+            return await context.Cargos
+                .Where(ec => ec.ContratoId == contratoId)
+                //.Include(ec => ec.Empresa)
+                //.Include(ec => ec.Contrato)
+                //.Include(ec => ec.ListadoHistoricoAcreditacionEmpresaContrato)
+                .ToListAsync();
+        }
+
+        [HttpGet("{contratoId}/turnos")]
+        //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<Turno>>> GetTurnosContratadaPorContradoId(int contratoId)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+            return await context.Turnos
+                .Where(ec => ec.ContratoId == contratoId)
+                .Include(ec => ec.Jornada)
+                .ToListAsync();
+        }
+
+        [HttpGet("{contratoId}/jornadas")]
+        //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<Jornada>>> GetJornadasContratadaPorContradoId(int contratoId)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+            return await context.Jornadas
+                .Where(ec => ec.ContratoId == contratoId)
+                .ToListAsync();
+        }
+
+        [HttpPost("{contratoId}/cargos")]
+        public async Task<ActionResult> PostCargoPorContrato(Cargo cargo)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(contrato => contrato.Id == cargo.ContratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+            // var nuevoTipoRolMapped = mapper.Map<TipoRol>(nuevoTipoRolDTO);
+            cargo.CreatedAt = DateTime.Now;
+            cargo.UpdatedAt = DateTime.Now;
+            context.Add(cargo);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+
 
         [HttpPost("completar-paso-dos")]
         public async Task<ActionResult> CrearContratoPasoDos(NuevoContratoUsuarioDTO nuevoContratoUsuario)

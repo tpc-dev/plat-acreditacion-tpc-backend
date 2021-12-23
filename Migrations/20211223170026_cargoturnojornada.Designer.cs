@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlatAcreditacionTPCBackend;
 
@@ -11,9 +12,10 @@ using PlatAcreditacionTPCBackend;
 namespace PlatAcreditacionTPCBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211223170026_cargoturnojornada")]
+    partial class cargoturnojornada
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -254,15 +256,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<int>("ContratoId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -649,12 +645,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<bool>("Activo")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ContratoId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("FechaInicio")
                         .HasColumnType("datetime2");
 
@@ -669,9 +659,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -826,9 +813,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<bool>("Activo")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ContratoId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -858,8 +842,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ContratoId");
 
                     b.HasIndex("JornadaId");
 
@@ -1232,19 +1214,11 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Turno", b =>
                 {
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Contrato", "Contrato")
-                        .WithMany()
-                        .HasForeignKey("ContratoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("PlatAcreditacionTPCBackend.Entidades.Jornada", "Jornada")
                         .WithMany()
                         .HasForeignKey("JornadaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Contrato");
 
                     b.Navigation("Jornada");
                 });

@@ -55,5 +55,8 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<EmpresaContrato> EmpresasContratos { get; set; }
     public DbSet<ContratoUsuario> ContratosUsuarios{ get; set; }
     public DbSet<HistoricoAcreditacionEmpresaContrato> HistoricosAcreditacionEmpresaContratos { get; set; }
+    public DbSet<Cargo> Cargos { get; set; }
+    public DbSet<Jornada> Jornadas { get; set; }
+    public DbSet<Turno> Turnos{ get; set; }
 
 }

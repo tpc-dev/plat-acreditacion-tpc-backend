@@ -72,7 +72,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
         {   
             // TODO VERIFICAR QUE NO EXISTE UNA CARPETA DE ARRANQUE CON ESTE CONTRATO ID
 
-            var existe = await context.CarpetasArranques.AnyAsync(x => x.ContratoId == nuevoCarpetaArranqueDTO.ContratoId));
+            var existe = await context.CarpetasArranques.AnyAsync(x => x.ContratoId == nuevoCarpetaArranqueDTO.ContratoId);
 
             if (existe)
             {
