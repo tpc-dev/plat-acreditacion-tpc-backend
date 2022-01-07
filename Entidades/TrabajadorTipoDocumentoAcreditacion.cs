@@ -2,7 +2,7 @@
 
 namespace PlatAcreditacionTPCBackend.Entidades
 {
-    public class EmpresaTipoDocumentoAcreditacion
+    public class TrabajadorTipoDocumentoAcreditacion
     {
         [Required]
         public int Id { get; set; }
@@ -10,14 +10,15 @@ namespace PlatAcreditacionTPCBackend.Entidades
         public int TipoDocumentoAcreditacionId { get; set; }
         public TipoDocumentoAcreditacion TipoDocumentoAcreditacion { get; set; }
         [Required]
-        public int EmpresaContratoContratoId { get; set; }
-        public Contrato Contrato{ get; set; }
+        public int ContratoTrabajadorContratoId { get; set; }
+        public Contrato Contrato { get; set; }
         [Required]
-        public int EmpresaContratoEmpresaId { get; set; }
-        public Empresa Empresa { get; set; }
+        public int ContratoTrabajadorTrabajadorId { get; set; }
+        public Trabajador Trabajador { get; set; }
         [Required]
         public int EstadoAcreditacionId { get; set; }
         public EstadoAcreditacion EstadoAcreditacion { get; set; }
+        public List<HistoricoAcreditacionTrabajadorTipoDocumentoAcreditacion> ListHistoricosAcreditacionTrabajadorTipoDocumentoAcreditacion { get; set; }
         [Required]
         public DateTime FechaInicio { get; set; }
         [Required]
@@ -26,6 +27,5 @@ namespace PlatAcreditacionTPCBackend.Entidades
         public string UrlFile { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
     }
 }

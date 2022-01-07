@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlatAcreditacionTPCBackend;
 
@@ -11,9 +12,10 @@ using PlatAcreditacionTPCBackend;
 namespace PlatAcreditacionTPCBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220106033732_InitialData")]
+    partial class InitialData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -526,6 +528,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("EstadoAcreditacionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("RazonSocial")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -538,6 +543,8 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EstadoAcreditacionId");
 
                     b.ToTable("Empresas");
                 });
@@ -1840,6 +1847,17 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Navigation("EstadoAcreditacion");
 
                     b.Navigation("Vehiculo");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Empresa", b =>
+                {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.EstadoAcreditacion", "EstadoAcreditacion")
+                        .WithMany()
+                        .HasForeignKey("EstadoAcreditacionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EstadoAcreditacion");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EmpresaContrato", b =>

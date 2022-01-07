@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,13 @@ namespace PlatAcreditacionTPCBackend.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly ApplicationDbContext context;
+        private readonly IMapper mapper;
 
-        public UsuarioController(ApplicationDbContext context)
+
+        public UsuarioController(ApplicationDbContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -47,7 +51,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 return NotFound("El id de usuario no existe");
             }
 
-            return await context.Empresas.Include(x=>x.EstadoAcreditacion).Where(x => x.Id == existeUsuario.EmpresaId).FirstOrDefaultAsync();
+            return await context.Empresas.Where(x => x.Id == existeUsuario.EmpresaId).FirstOrDefaultAsync();
         }
 
 
@@ -86,7 +90,9 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 return BadRequest($"No existe el rol de Id: {nuevoUsuarioDTO.TipoRolId}");
             }
 
-            context.Add(nuevoUsuarioDTO);
+            var nuevoUsuario = mapper.Map<Usuario>(nuevoUsuarioDTO);
+
+            context.Add(nuevoUsuario);
             await context.SaveChangesAsync();
             return Ok();
         }
@@ -109,6 +115,27 @@ namespace PlatAcreditacionTPCBackend.Controllers
             await context.SaveChangesAsync();
             return Ok();
         }
+
+        //[HttpPut("{id:int}")]
+        //public async Task<ActionResult> CambiarEstado(int id, int id)
+        //{
+
+        //    bool existe = await context.Usuarios.AnyAsync(usuario => usuario.Id == id);
+        //    if (!existe)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    //if (usuario.Id != id)
+        //    //{
+        //    //    return BadRequest("El id del usuario no coincide con el id de la URL");
+        //    //}
+       
+
+        //    context.Update(usuario);
+        //    await context.SaveChangesAsync();
+        //    return Ok();
+        //}
 
         /* 
          * Actualizar datos usuario desde la plataforma web

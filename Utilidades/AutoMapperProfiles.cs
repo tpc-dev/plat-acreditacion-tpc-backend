@@ -19,6 +19,7 @@ namespace PlatAcreditacionTPCBackend.Utilidades
             CreateMap<NuevaEmpresaContratoDTO, EmpresaContrato>();
             CreateMap<NuevoDocumentoClasificacionDTO, DocumentoClasificacion>();
             CreateMap<NuevoCarpetaArranqueDTO, CarpetaArranque>();
+            CreateMap<NuevoTrabajadorTPCDTO, TrabajadorTPC>();
         }
     }
 }

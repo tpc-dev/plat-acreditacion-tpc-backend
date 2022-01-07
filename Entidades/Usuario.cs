@@ -30,6 +30,8 @@ namespace PlatAcreditacionTPCBackend.Entidades
         public int EmpresaId { get; set; }
         public Empresa Empresa { get; set; }
         public TipoRol TipoRol { get; set; }
+        public int TrabajadorTPCId { get; set; }
+        public TrabajadorTPC TrabajadorTPC { get; set; }
         public List<ContratoUsuario> ContratosUsuarios { get; set; }
         [Required]
         public DateTime CreatedAt { get; set; }

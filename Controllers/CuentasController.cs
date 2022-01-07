@@ -141,18 +141,23 @@ namespace PlatAcreditacionTPCBackend.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<RespuestaAutenticacionLogin>> Login(CredencialesUsuario credencialesUsuario)
         {
-            var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password,
-                isPersistent: false, lockoutOnFailure: false);
+            bool usuarioActivo = await context.Usuarios.Where(u => u.Activo && credencialesUsuario.Email == u.Email).AnyAsync();
+            if (usuarioActivo)
+            {
+                var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password,
+                    isPersistent: false, lockoutOnFailure: false);
 
 
-            if (resultado.Succeeded)
-            {
-                return await ConstruirTokenLogin(credencialesUsuario);
+                if (resultado.Succeeded)
+                {
+                    return await ConstruirTokenLogin(credencialesUsuario);
+                }
+                else
+                {
+                    return BadRequest("Login Incorrecto");
+                }
             }
-            else
-            {
-                return BadRequest("Login Incorrecto");
-            }
+            return NotFound("Este usuario no se encuentra activo");
         }
 
 

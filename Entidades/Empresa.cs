@@ -10,9 +10,6 @@ namespace PlatAcreditacionTPCBackend.Entidades
         public string Rut { get; set; }
         [Required]
         public string RazonSocial { get; set; }
-        [Required]
-        public int EstadoAcreditacionId { get; set; }
-        public EstadoAcreditacion EstadoAcreditacion { get; set; }
         public List<EmpresaContrato> EmpresasContrato{ get; set; }  // ESTA TABLA GUARDA LOS REGISTROS CUANDO SE TIENE QUE ACREDITAR LA EMPRESA POR CADA CONTRATO QUE TENGA ESTA
         [Required]
         public bool Activo { get; set; }

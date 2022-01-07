@@ -29,29 +29,31 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return await context.Empresas.ToListAsync();
         }
 
-        [HttpGet("en-acreditacion")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<List<Empresa>>> GetEmpresaEnAcreditacion(int id)
-        {
-           // id = 2 estado aceptado de creditacion
-            return await context.Empresas.Include(x => x.EstadoAcreditacion).Where(x => x.EstadoAcreditacionId != 2 && x.Activo == true).ToListAsync();
-        }
+        //[HttpGet("en-acreditacion")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //public async Task<ActionResult<List<Empresa>>> GetEmpresaEnAcreditacion(int id)
+        //{
+        //   // id = 2 estado aceptado de creditacion
+        //    //return await context.Empresas.Include(x => x.EstadoAcreditacion).Where(x => x.EstadoAcreditacionId != 2 && x.Activo == true).ToListAsync();
+        //    return await context.Empresas.Include(x => x.EstadoAcreditacion).Where(x => x.EstadoAcreditacionId != 2 && x.Activo == true).ToListAsync();
+        //}
 
 
-        [HttpGet("acreditadas")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<List<Empresa>>> GetEmpresaAcreditadas(int id)
-        {
-            // id = 2 estado aceptado de creditacion
-            return await context.Empresas.Include(x => x.EstadoAcreditacion).Where(x => x.EstadoAcreditacionId == 2 && x.Activo == true).ToListAsync();
-        }
+        //[HttpGet("acreditadas")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //public async Task<ActionResult<List<Empresa>>> GetEmpresaAcreditadas(int id)
+        //{
+        //    // id = 2 estado aceptado de creditacion
+        //    //return await context.Empresas.Include(x => x.EstadoAcreditacion).Where(x => x.EstadoAcreditacionId == 2 && x.Activo == true).ToListAsync();
+        //    return await context.Empresas.Include(x => x.EstadoAcreditacion).Where(x => x.EstadoAcreditacionId == 2 && x.Activo == true).ToListAsync();
+        //}
 
         [HttpGet("activos")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<List<Empresa>>> GetEmpresaActivas(int id)
         {
             // id = 2 estado aceptado de creditacion
-            return await context.Empresas.Include(x => x.EstadoAcreditacion).Where(x => x.Activo == true).ToListAsync();
+            return await context.Empresas.Where(x => x.Activo == true).ToListAsync();
         }
 
         [HttpPost]

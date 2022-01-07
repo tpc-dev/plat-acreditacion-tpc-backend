@@ -21,7 +21,9 @@ namespace PlatAcreditacionTPCBackend.DTOs
         [Required]
         public string Telefono { get; set; }
         [Required]
-        public int TipoRolId { get; set; }
+        public int TipoRolId { get; set; } 
+        [Required]
+        public int TrabajadorTPCId { get; set; }
         [Required]
         public bool Activo { get; set; }
         [Required]
