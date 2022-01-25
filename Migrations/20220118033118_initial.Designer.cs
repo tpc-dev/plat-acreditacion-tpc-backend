@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlatAcreditacionTPCBackend;
 
@@ -11,9 +12,10 @@ using PlatAcreditacionTPCBackend;
 namespace PlatAcreditacionTPCBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220118033118_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -500,38 +502,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.HasIndex("VehiculoId");
 
                     b.ToTable("ContratosVehiculos");
-                });
-
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.CorreoAlertaCovid", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("Activo")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ApellidoPaterno")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailMaterno")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CorreosAlertaCovid");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.DocumentoClasificacion", b =>
@@ -1145,36 +1115,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.HasIndex("ContratoTrabajadorContratoId", "ContratoTrabajadorTrabajadorId");
 
                     b.ToTable("RegistroAccesosTrabajadoresContrato");
-                });
-
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroAccesoTrabajadorFrecuente", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("FechaEvento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("NombradaDiariaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TipoEvento")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TrabajadorFrecuenteId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NombradaDiariaId");
-
-                    b.HasIndex("TrabajadorFrecuenteId");
-
-                    b.ToTable("RegistroAccesosTrabajadoresFrecuente");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroAccesoVehiculoContrato", b =>
@@ -2286,25 +2226,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Navigation("Contrato");
 
                     b.Navigation("Trabajador");
-                });
-
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroAccesoTrabajadorFrecuente", b =>
-                {
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.NombradaDiaria", "NombradaDiaria")
-                        .WithMany()
-                        .HasForeignKey("NombradaDiariaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.TrabajadorFrecuente", "TrabajadorFrecuente")
-                        .WithMany()
-                        .HasForeignKey("TrabajadorFrecuenteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("NombradaDiaria");
-
-                    b.Navigation("TrabajadorFrecuente");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroAccesoVehiculoContrato", b =>

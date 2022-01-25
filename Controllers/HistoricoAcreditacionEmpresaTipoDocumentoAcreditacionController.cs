@@ -5,15 +5,14 @@ using PlatAcreditacionTPCBackend.Entidades;
 
 namespace PlatAcreditacionTPCBackend.Controllers
 {
-
     [ApiController]
-    [Route("api/historico-acreditacion-contrato-documento")]
-    public class HistoricoAcreditacionContratoTipoDocumentoAcreditacionController : ControllerBase
+    [Route("api/historico-acreditacion-empresa-documento")]
+    public class HistoricoAcreditacionEmpresaTipoDocumentoAcreditacionController : ControllerBase
     {
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
 
-        public HistoricoAcreditacionContratoTipoDocumentoAcreditacionController(ApplicationDbContext context, IMapper mapper)
+        public HistoricoAcreditacionEmpresaTipoDocumentoAcreditacionController(ApplicationDbContext context, IMapper mapper)
         {
             this.context = context;
             this.mapper = mapper;
@@ -21,16 +20,16 @@ namespace PlatAcreditacionTPCBackend.Controllers
 
         [HttpGet]
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<List<HistoricoAcreditacionContratoTipoDocumentoAcreditacion>>> Get()
+        public async Task<ActionResult<List<HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion>>> Get()
         {
-            return await context.HistoricosAcreditacionContratoTipoDocumentoAcreditacion.ToListAsync();
+            return await context.HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion.ToListAsync();
         }
 
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<HistoricoAcreditacionContratoTipoDocumentoAcreditacion>> Get(int id)
+        public async Task<ActionResult<HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion>> Get(int id)
         {
-            var historico = await context.HistoricosAcreditacionContratoTipoDocumentoAcreditacion.FirstOrDefaultAsync(x => x.Id == id);
+            var historico = await context.HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion.FirstOrDefaultAsync(x => x.Id == id);
             if (historico == null)
             {
                 return NotFound();
@@ -40,7 +39,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(HistoricoAcreditacionContratoTipoDocumentoAcreditacion historico)
+        public async Task<ActionResult> Post(HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion historico)
         {
             historico.Fecha = DateTime.Now;
             context.Add(historico);
@@ -48,17 +47,17 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return Ok();
         }
 
-        [HttpGet("{contratoTipoDocumentoId}/historico")]
-        public async Task<ActionResult<List<HistoricoAcreditacionContratoTipoDocumentoAcreditacion>>> GetHistoricoContratoTipoDocumento(int contratoTipoDocumentoId)
+        [HttpGet("{empresaTipoDocumentoId}/historico")]
+        public async Task<ActionResult<List<HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion>>> GetHistoricoContratoTipoDocumento(int empresaTipoDocumentoId)
         {
-            var historico = await context.ContratoTiposDocumentoAcreditacion.FirstOrDefaultAsync(x => x.Id == contratoTipoDocumentoId);
+            var historico = await context.EmpresaTiposDocumentosAcreditacion.FirstOrDefaultAsync(x => x.Id == empresaTipoDocumentoId);
             if (historico == null)
             {
                 return NotFound();
             }
 
-            return await context.HistoricosAcreditacionContratoTipoDocumentoAcreditacion
-                .Where(h => h.ContratoTipoDocumentoAcreditacionId == contratoTipoDocumentoId)
+            return await context.HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion
+                .Where(h => h.EmpresaTipoDocumentoAcreditacionId == empresaTipoDocumentoId)
                 .Include(h => h.EstadoAcreditacion)
                 .OrderByDescending(h => h.Fecha)
                 .Take(5)
@@ -66,7 +65,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> Put(HistoricoAcreditacionContratoTipoDocumentoAcreditacion historico, int id)
+        public async Task<ActionResult> Put(HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion historico, int id)
         {
             if (historico.Id != id)
             {
@@ -87,13 +86,13 @@ namespace PlatAcreditacionTPCBackend.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            bool existe = await context.HistoricosAcreditacionContratoTipoDocumentoAcreditacion.AnyAsync(historico => historico.Id == id);
+            bool existe = await context.HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion.AnyAsync(historico => historico.Id == id);
             if (!existe)
             {
                 return NotFound();
             }
 
-            context.Remove(new HistoricoAcreditacionContratoTipoDocumentoAcreditacion() { Id = id });
+            context.Remove(new HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion() { Id = id });
             await context.SaveChangesAsync();
             return Ok();
         }

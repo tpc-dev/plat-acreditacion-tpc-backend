@@ -54,6 +54,19 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return await context.Empresas.Where(x => x.Id == existeUsuario.EmpresaId).FirstOrDefaultAsync();
         }
 
+        [HttpGet("{id:int}/trabajadores-frecuentes")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<TrabajadorFrecuente>>> GetTrabajadoresFrecuentesPorUsuarioId(int id)
+        {
+            var existeUsuario = await context.Usuarios.FirstOrDefaultAsync(x => x.Id == id);
+            if (existeUsuario == null)
+            {
+                return NotFound("El id de usuario no existe");
+            }
+
+            return await context.TrabajadoresFrecuente.Where(x => x.UsuarioId == existeUsuario.Id).ToListAsync();
+        }
+
 
         //[HttpGet("tipo-rol/{tipoRol:int}")]
         //public async Task<ActionResult<Usuario>> GetUsuarioPorTipoRol(int tipoRol)

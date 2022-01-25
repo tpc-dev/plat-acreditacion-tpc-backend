@@ -19,6 +19,9 @@ namespace PlatAcreditacionTPCBackend.Entidades
         public DateTime FechaTermino { get; set; }
         [Required]
         public string UrlFile { get; set; }
+        [Required]
+        public int EstadoAcreditacionId { get; set; }
+        public EstadoAcreditacion EstadoAcreditacion { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

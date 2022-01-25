@@ -44,20 +44,20 @@ namespace PlatAcreditacionTPCBackend.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> Put(Area area, int id)
+        public async Task<ActionResult> Put(Gerencia gerencia, int id)
         {
-            if (area.Id != id)
+            if (gerencia.Id != id)
             {
-                return BadRequest("El id del area no coincide con el id de la URL");
+                return BadRequest("El id del gerencia no coincide con el id de la URL");
             }
 
-            bool existe = await context.Areas.AnyAsync(area => area.Id == id);
+            bool existe = await context.Gerencias.AnyAsync(gerencia => gerencia.Id == id);
             if (!existe)
             {
                 return NotFound();
             }
 
-            context.Update(area);
+            context.Update(gerencia);
             await context.SaveChangesAsync();
             return Ok();
         }
@@ -65,13 +65,13 @@ namespace PlatAcreditacionTPCBackend.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            bool existe = await context.Areas.AnyAsync(area => area.Id == id);
+            bool existe = await context.Gerencias.AnyAsync(gerencia => gerencia.Id == id);
             if (!existe)
             {
                 return NotFound();
             }
 
-            context.Remove(new Area() { Id = id });
+            context.Remove(new Gerencia() { Id = id });
             await context.SaveChangesAsync();
             return Ok();
         }

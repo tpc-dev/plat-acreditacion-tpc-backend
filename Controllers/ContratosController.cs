@@ -38,12 +38,22 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return await context.Contratos.Include(contrato => contrato.EtapaCreacionContrato).ToListAsync();
         }
 
+
+        [HttpGet("{id}")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<Contrato>> GetPorId(int id)
+        {
+            return await context.Contratos.Include(contrato => contrato.EtapaCreacionContrato).FirstOrDefaultAsync(c => c.Id == id);
+        }
+
         [HttpGet("{idContrato}/carpeta-arranque")]
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<CarpetaArranque>> GetCarpetaArranqueByContratoId()
         {
             //.ForEachAsync(carpeta => carpeta.ItemsCarpetaArranqueCarpetaArranque.FirstOrDefault())
-            return await context.CarpetasArranques.FirstOrDefaultAsync();
+            return await context.CarpetasArranques
+                .Include(c=> c.Contrato)
+                .FirstOrDefaultAsync();
         }
 
 
@@ -58,15 +68,15 @@ namespace PlatAcreditacionTPCBackend.Controllers
 
         [HttpGet("historico")]
         //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<List<HistoricoAcreditacionEmpresaContrato>>> GetContratoPasoUnoCompletado(string codigoContrato)
+        public async Task<ActionResult<List<HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion>>> GetContratoPasoUnoCompletado(string codigoContrato)
         {
 
-            return await context.HistoricosAcreditacionEmpresaContratos.ToListAsync();
+            return await context.HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion.ToListAsync();
         }
 
         [HttpGet("{contratoId}/empresa-contratadas")]
         //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<List<EmpresaContrato>>> GetEmpresasContratadaPorContradoId(int contratoId)
+        public async Task<ActionResult<EmpresaContrato>> GetEmpresasContratadaPorContradoId(int contratoId)
         {
             bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
             if (!existeContrato)
@@ -78,8 +88,8 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 .Where(ec => ec.ContratoId == contratoId)
                 .Include(ec => ec.Empresa)
                 .Include(ec => ec.Contrato)
-                .Include(ec => ec.ListadoHistoricoAcreditacionEmpresaContrato)
-                .ToListAsync();
+                .Include(ec => ec.EstadoAcreditacion)
+                .FirstOrDefaultAsync();
         }
 
 
@@ -103,6 +113,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
             }
 
             nuevaEmpresaContratoDTO.FechaCreacion = DateTime.Now;
+            nuevaEmpresaContratoDTO.EstadoAcreditacionId = 2; // ESTADO PENDIENTE
 
             var nuevaEmpresaContratoMapeado = mapper.Map<EmpresaContrato>(nuevaEmpresaContratoDTO);
             context.Add(nuevaEmpresaContratoMapeado);
@@ -190,6 +201,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 .Where(ct => ct.ContratoId == contratoId)
                 .Include(ct => ct.Trabajador)
                 .Include(ct => ct.Cargo)
+                .Include(ct => ct.EstadoAcreditacion)
                 .Include(ct => ct.ListTrabajadorTiposDocumentoAcreditacion.Where(doc=> doc.ContratoTrabajadorContratoId== contratoId))
                 .ToListAsync();
         }
@@ -211,9 +223,86 @@ namespace PlatAcreditacionTPCBackend.Controllers
             empresaTipoDocumentoAcreditacion.EmpresaContratoEmpresaId = empresaContrato.EmpresaId;
             context.Add(empresaTipoDocumentoAcreditacion);
             await context.SaveChangesAsync();
+
+
+            HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion historico = new()
+            {
+                EmpresaTipoDocumentoAcreditacionId = empresaTipoDocumentoAcreditacion.Id,
+                EstadoAcreditacionId = 2, // ESTADO PENDIENTE
+                Fecha = DateTime.Now,
+            };
+
+            context.Add(historico);
+
+            await context.SaveChangesAsync();
             return Ok();
-        } 
-        
+        }
+
+
+        [HttpPost("{contratoId}/trabajador/documento")]
+        public async Task<ActionResult> PostTipoDocumentoAcreditacionTrabajadorAContratoId(int contratoId, TrabajadorTipoDocumentoAcreditacion trabajadorTipoDocumentoAcreditacion)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+            ContratoTrabajador contratoTrabajador = await context.ContratosTrabajadores.Where(ec => ec.ContratoId == contratoId).FirstOrDefaultAsync();
+
+            trabajadorTipoDocumentoAcreditacion.CreatedAt = DateTime.Now;
+            trabajadorTipoDocumentoAcreditacion.UpdatedAt = DateTime.Now;
+            trabajadorTipoDocumentoAcreditacion.ContratoTrabajadorContratoId = contratoTrabajador.ContratoId;
+            trabajadorTipoDocumentoAcreditacion.ContratoTrabajadorTrabajadorId = contratoTrabajador.TrabajadorId;
+            context.Add(trabajadorTipoDocumentoAcreditacion);
+            await context.SaveChangesAsync();
+
+
+            HistoricoAcreditacionTrabajadorTipoDocumentoAcreditacion historico = new()
+            {
+                TrabajadorTipoDocumentoAcreditacionId = trabajadorTipoDocumentoAcreditacion.Id,
+                EstadoAcreditacionId = 2, // ESTADO PENDIENTE
+                Fecha = DateTime.Now,
+            };
+
+            context.Add(historico);
+
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost("{contratoId}/vehiculo/documento")]
+        public async Task<ActionResult> PostTipoDocumentoAcreditacionVehiculoAContratoId(int contratoId, VehiculoTipoDocumentoAcreditacion vehiculoTipoDocumentoAcreditacion)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+            ContratoVehiculo contratoVehiculo = await context.ContratosVehiculos.Where(ec => ec.ContratoId == contratoId).FirstOrDefaultAsync();
+
+            vehiculoTipoDocumentoAcreditacion.CreatedAt = DateTime.Now;
+            vehiculoTipoDocumentoAcreditacion.UpdatedAt = DateTime.Now;
+            vehiculoTipoDocumentoAcreditacion.ContratoVehiculoContratoId = contratoVehiculo.ContratoId;
+            vehiculoTipoDocumentoAcreditacion.ContratoVehiculoVehiculoId = contratoVehiculo.VehiculoId;
+            context.Add(vehiculoTipoDocumentoAcreditacion);
+            await context.SaveChangesAsync();
+
+
+            HistoricoAcreditacionVehiculoTipoDocumentoAcreditacion historico = new()
+            {
+                VehiculoTipoDocumentoAcreditacionId = vehiculoTipoDocumentoAcreditacion.Id,
+                EstadoAcreditacionId = 2, // ESTADO PENDIENTE
+                Fecha = DateTime.Now,
+            };
+
+            context.Add(historico);
+            await context.SaveChangesAsync();
+
+            return Ok();
+        }
+
         [HttpPost("{contratoId}/documento/{documentoId}/file")]
         public async Task<ActionResult> PostSubirArchivoToDocumentoContrato(int contratoId,int documentoId)
         {
@@ -256,6 +345,189 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return Ok();
         }
 
+        #region Editar Documento 
+
+        [HttpPut("{contratoId}/documento")]
+        public async Task<ActionResult> PutTipoDocumentoAcreditacionContratoAContratoId(int contratoId, ContratoTipoDocumentoAcreditacion contratoTipoDocumentoAcreditacion)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+          //  contratoTipoDocumentoAcreditacion.CreatedAt = DateTime.Now;
+            contratoTipoDocumentoAcreditacion.UpdatedAt = DateTime.Now;
+
+            ContratoTipoDocumentoAcreditacion existe = await context.ContratoTiposDocumentoAcreditacion
+                .FirstOrDefaultAsync(x => x.ContratoId == contratoTipoDocumentoAcreditacion.ContratoId && x.TipoDocumentoAcreditacionId == contratoTipoDocumentoAcreditacion.TipoDocumentoAcreditacionId);
+
+            if(existe == null)
+            {
+                return NotFound();
+            }
+
+            existe.UpdatedAt = DateTime.Now;
+            existe.EstadoAcreditacionId = 2;
+            existe.UrlFile = contratoTipoDocumentoAcreditacion.UrlFile;
+            existe.FechaInicio = contratoTipoDocumentoAcreditacion.FechaInicio;
+            existe.FechaTermino = contratoTipoDocumentoAcreditacion.FechaTermino;
+
+            context.Update(existe);
+
+            await context.SaveChangesAsync();
+
+            HistoricoAcreditacionContratoTipoDocumentoAcreditacion historico = new()
+            {
+                ContratoTipoDocumentoAcreditacionId = existe.Id,
+                EstadoAcreditacionId = 2, // ESTADO PENDIENTE
+                Fecha = DateTime.Now,
+            };
+
+            context.Add(historico);
+
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+
+        [HttpPut("{contratoId}/empresas/documento")]
+        public async Task<ActionResult> PutTipoDocumentoAcreditacionEmpresaAContratoId(int contratoId, EmpresaTipoDocumentoAcreditacion empresaTipoDocumentoAcreditacion)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound($"No existe contrato de id {contratoId}");
+            }
+
+            //  contratoTipoDocumentoAcreditacion.CreatedAt = DateTime.Now;
+            empresaTipoDocumentoAcreditacion.UpdatedAt = DateTime.Now;
+
+            EmpresaTipoDocumentoAcreditacion existe = await context.EmpresaTiposDocumentosAcreditacion
+                .FirstOrDefaultAsync(x => x.EmpresaContratoContratoId == empresaTipoDocumentoAcreditacion.EmpresaContratoContratoId &&
+                                          x.EmpresaContratoEmpresaId == empresaTipoDocumentoAcreditacion.EmpresaContratoEmpresaId &&
+                                          x.TipoDocumentoAcreditacionId == empresaTipoDocumentoAcreditacion.TipoDocumentoAcreditacionId);
+
+            if (existe == null)
+            {
+                return NotFound($"No existe EmpresaTipoDocumentoAcreditacion de id {empresaTipoDocumentoAcreditacion}");
+            }
+
+            existe.UpdatedAt = DateTime.Now;
+            existe.EstadoAcreditacionId = 2;
+            existe.UrlFile = empresaTipoDocumentoAcreditacion.UrlFile;
+            existe.FechaInicio = empresaTipoDocumentoAcreditacion.FechaInicio;
+            existe.FechaTermino = empresaTipoDocumentoAcreditacion.FechaTermino;
+
+            context.Update(existe);
+
+            await context.SaveChangesAsync();
+
+            HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion historico = new()
+            {
+                EmpresaTipoDocumentoAcreditacionId = existe.Id,
+                EstadoAcreditacionId = 2, // ESTADO PENDIENTE
+                Fecha = DateTime.Now,
+            };
+
+            context.Add(historico);
+
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPut("{contratoId}/trabajador/documento")]
+        public async Task<ActionResult> PutTipoDocumentoAcreditacionTrabajadorAContratoId(int contratoId, TrabajadorTipoDocumentoAcreditacion trabajadorTipoDocumentoAcreditacion)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+            //  contratoTipoDocumentoAcreditacion.CreatedAt = DateTime.Now;
+            trabajadorTipoDocumentoAcreditacion.UpdatedAt = DateTime.Now;
+
+            TrabajadorTipoDocumentoAcreditacion existe = await context.TrabajadorTiposDocumentoAcreditacion
+                .FirstOrDefaultAsync(x => x.ContratoTrabajadorTrabajadorId == trabajadorTipoDocumentoAcreditacion.ContratoTrabajadorTrabajadorId &&
+                                          x.ContratoTrabajadorContratoId == trabajadorTipoDocumentoAcreditacion.ContratoTrabajadorContratoId &&
+                                          x.TipoDocumentoAcreditacionId == trabajadorTipoDocumentoAcreditacion.TipoDocumentoAcreditacionId);
+
+            if (existe == null)
+            {
+                return NotFound();
+            }
+
+            existe.UpdatedAt = DateTime.Now;
+            existe.EstadoAcreditacionId = 2;
+            existe.UrlFile = trabajadorTipoDocumentoAcreditacion.UrlFile;
+            existe.FechaInicio = trabajadorTipoDocumentoAcreditacion.FechaInicio;
+            existe.FechaTermino = trabajadorTipoDocumentoAcreditacion.FechaTermino;
+
+            context.Update(existe);
+
+            await context.SaveChangesAsync();
+
+            HistoricoAcreditacionTrabajadorTipoDocumentoAcreditacion historico = new()
+            {
+                TrabajadorTipoDocumentoAcreditacionId = existe.Id,
+                EstadoAcreditacionId = 2, // ESTADO PENDIENTE
+                Fecha = DateTime.Now,
+            };
+
+            context.Add(historico);
+
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPut("{contratoId}/vehiculo/documento")]
+        public async Task<ActionResult> PutTipoDocumentoAcreditacionVehiculoAContratoId(int contratoId, VehiculoTipoDocumentoAcreditacion vehiculoTipoDocumentoAcreditacion)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+            //  contratoTipoDocumentoAcreditacion.CreatedAt = DateTime.Now;
+            vehiculoTipoDocumentoAcreditacion.UpdatedAt = DateTime.Now;
+
+            VehiculoTipoDocumentoAcreditacion existe = await context.VehiculoTiposDocumentosAcreditacion
+                .FirstOrDefaultAsync(x => x.ContratoVehiculoVehiculoId == vehiculoTipoDocumentoAcreditacion.ContratoVehiculoVehiculoId &&
+                                          x.ContratoVehiculoContratoId == vehiculoTipoDocumentoAcreditacion.ContratoVehiculoContratoId &&
+                                          x.TipoDocumentoAcreditacionId == vehiculoTipoDocumentoAcreditacion.TipoDocumentoAcreditacionId);
+
+            if (existe == null)
+            {
+                return NotFound();
+            }
+
+            existe.UpdatedAt = DateTime.Now;
+            existe.EstadoAcreditacionId = 2;
+            existe.UrlFile = vehiculoTipoDocumentoAcreditacion.UrlFile;
+            existe.FechaInicio = vehiculoTipoDocumentoAcreditacion.FechaInicio;
+            existe.FechaTermino = vehiculoTipoDocumentoAcreditacion.FechaTermino;
+
+            context.Update(existe);
+
+            await context.SaveChangesAsync();
+
+            HistoricoAcreditacionVehiculoTipoDocumentoAcreditacion historico = new()
+            {
+                VehiculoTipoDocumentoAcreditacionId = existe.Id,
+                EstadoAcreditacionId = 2, // ESTADO PENDIENTE
+                Fecha = DateTime.Now,
+            };
+
+            context.Add(historico);
+
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+        #endregion
+
         [HttpGet("{contratoId}/empresas/{empresaId}/documentos-requeridos")]
         public async Task<ActionResult<List<EmpresaTipoDocumentoAcreditacion>>> GetDocumentoAcreditacionEmpresaAContratoId(
             int contratoId, int empresaId)
@@ -276,6 +548,9 @@ namespace PlatAcreditacionTPCBackend.Controllers
             bool existeContratoEmpresa = await context.EmpresasContratos.AnyAsync(ec => ec.ContratoId == contratoId && ec.EmpresaId == empresaId);
             return await context.EmpresaTiposDocumentosAcreditacion
                 .Where(doc=>doc.EmpresaContratoContratoId == contratoId && doc.EmpresaContratoEmpresaId == empresaId)
+                .Include(doc => doc.EstadoAcreditacion)
+                .Include(c => c.Contrato)
+                .Include(doc => doc.TipoDocumentoAcreditacion.DocumentoClasificacion)
                 .ToListAsync();
         }
 
@@ -291,7 +566,148 @@ namespace PlatAcreditacionTPCBackend.Controllers
 
             return await context.ContratoTiposDocumentoAcreditacion
                 .Where(doc => doc.ContratoId == contratoId )
-                .Include(c => c.ListHistoricosAcreditacionContratoTipoDocumentoAcreditacion)
+                .Include(c => c.Contrato)
+                .Include(c => c.ListHistoricosAcreditacionContratoTipoDocumentoAcreditacion.Take(2))
+                .Include(c => c.EstadoAcreditacion)
+                .Include(c => c.TipoDocumentoAcreditacion.DocumentoClasificacion)
+                .ToListAsync();
+        }
+
+
+        #region CAMBIAR ESTADO DOCUMENTO ACREDITACION
+
+        [HttpPut("documento/{contratoDocumentoId}/estado-acreditacion")]
+        public async Task<ActionResult> CambiarEstadoAcreditacionDocumentoContrato (
+            int contratoDocumentoId, HistoricoAcreditacionContratoTipoDocumentoAcreditacion contratoTipoDocumentoAcreditacion)
+        {
+            ContratoTipoDocumentoAcreditacion existe = await context.ContratoTiposDocumentoAcreditacion.FirstOrDefaultAsync(c => contratoTipoDocumentoAcreditacion.ContratoTipoDocumentoAcreditacionId == c.Id);
+            //ContratoTipoDocumentoAcreditacion existe = await context.ContratoTiposDocumentoAcreditacion.FirstOrDefaultAsync(c => contratoDocumentoId == c.Id);
+            if (existe == null)
+            {
+                return NotFound("Documento de contrato no encontrado");
+            }
+
+            existe.EstadoAcreditacionId = contratoTipoDocumentoAcreditacion.EstadoAcreditacionId;
+            existe.UpdatedAt = DateTime.Now;
+            context.Update(existe);
+
+            contratoTipoDocumentoAcreditacion.Fecha = DateTime.Now;
+            context.Add(contratoTipoDocumentoAcreditacion);
+
+            await context.SaveChangesAsync();
+            return Ok();
+
+        }
+
+        [HttpPut("documento/{empresaDocumentoId}/empresa/estado-acreditacion")]
+        public async Task<ActionResult> CambiarEstadoAcreditacionDocumentoEmpresa(
+            int empresaDocumentoId, HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion historico)
+        {
+            EmpresaTipoDocumentoAcreditacion existe = await context.EmpresaTiposDocumentosAcreditacion
+                .FirstOrDefaultAsync(c => empresaDocumentoId == c.Id);
+            //ContratoTipoDocumentoAcreditacion existe = await context.ContratoTiposDocumentoAcreditacion.FirstOrDefaultAsync(c => contratoDocumentoId == c.Id);
+            if (existe == null)
+            {
+                return NotFound("Documento de contrato no encontrado");
+            }
+
+            existe.EstadoAcreditacionId = historico.EstadoAcreditacionId;
+            existe.UpdatedAt = DateTime.Now;
+            context.Update(existe);
+
+            historico.Fecha = DateTime.Now;
+            context.Add(historico);
+
+            await context.SaveChangesAsync();
+            return Ok();
+
+        }
+
+        [HttpPut("documento/{trabajadorDocumentoId}/trabajador/estado-acreditacion")]
+        public async Task<ActionResult> CambiarEstadoAcreditacionDocumentoTrabajador(
+           int trabajadorDocumentoId, HistoricoAcreditacionTrabajadorTipoDocumentoAcreditacion historico)
+        {
+            TrabajadorTipoDocumentoAcreditacion existe = await context.TrabajadorTiposDocumentoAcreditacion
+                .FirstOrDefaultAsync(c => trabajadorDocumentoId == c.Id);
+            //ContratoTipoDocumentoAcreditacion existe = await context.ContratoTiposDocumentoAcreditacion.FirstOrDefaultAsync(c => contratoDocumentoId == c.Id);
+            if (existe == null)
+            {
+                return NotFound("Documento de contrato no encontrado");
+            }
+
+            existe.EstadoAcreditacionId = historico.EstadoAcreditacionId;
+            existe.UpdatedAt = DateTime.Now;
+            context.Update(existe);
+
+            historico.Fecha = DateTime.Now;
+            context.Add(historico);
+
+            await context.SaveChangesAsync();
+            return Ok();
+
+        }
+
+        [HttpPut("documento/{vehiculoDocumentoId}/vehiculo/estado-acreditacion")]
+        public async Task<ActionResult> CambiarEstadoAcreditacionDocumentoVehiculo(
+          int vehiculoDocumentoId, HistoricoAcreditacionVehiculoTipoDocumentoAcreditacion historico)
+        {
+            VehiculoTipoDocumentoAcreditacion existe = await context.VehiculoTiposDocumentosAcreditacion
+                .FirstOrDefaultAsync(c => vehiculoDocumentoId == c.Id);
+            //ContratoTipoDocumentoAcreditacion existe = await context.ContratoTiposDocumentoAcreditacion.FirstOrDefaultAsync(c => contratoDocumentoId == c.Id);
+            if (existe == null)
+            {
+                return NotFound("Documento de contrato no encontrado");
+            }
+
+            existe.EstadoAcreditacionId = historico.EstadoAcreditacionId;
+            existe.UpdatedAt = DateTime.Now;
+            context.Update(existe);
+
+            historico.Fecha = DateTime.Now;
+            context.Add(historico);
+
+            await context.SaveChangesAsync();
+            return Ok();
+
+        }
+
+        #endregion
+
+        [HttpGet("{contratoId}/vehiculo/{vehiculoId}/documentos-requeridos")]
+        public async Task<ActionResult<List<VehiculoTipoDocumentoAcreditacion>>> GetDocumentoAcreditacionVehiculoContratoId(
+          int contratoId, int vehiculoId)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+            return await context.VehiculoTiposDocumentosAcreditacion
+                .Where(doc => doc.ContratoVehiculoContratoId == contratoId && doc.ContratoVehiculoVehiculoId == vehiculoId)
+                 .Include(c => c.Contrato)
+                .Include(c => c.ListHistoricosAcreditacionVehiculoTipoDocumentoAcreditacion)
+                .Include(c => c.EstadoAcreditacion)
+                .Include(c => c.TipoDocumentoAcreditacion.DocumentoClasificacion)
+                .ToListAsync();
+        }
+
+        [HttpGet("{contratoId}/trabajador/{trabajadorId}/documentos-requeridos")]
+        public async Task<ActionResult<List<TrabajadorTipoDocumentoAcreditacion>>> GetDocumentoAcreditacionTrabajadorContratoId(
+         int contratoId, int trabajadorId)
+        {
+            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
+            if (!existeContrato)
+            {
+                return NotFound();
+            }
+
+            return await context.TrabajadorTiposDocumentoAcreditacion
+                .Where(doc => doc.ContratoTrabajadorContratoId == contratoId && doc.ContratoTrabajadorTrabajadorId == trabajadorId)
+                 .Include(c => c.Contrato)
+                .Include(c => c.ListHistoricosAcreditacionTrabajadorTipoDocumentoAcreditacion)
+                .Include(c => c.EstadoAcreditacion)
+                .Include(c => c.TipoDocumentoAcreditacion.DocumentoClasificacion)
                 .ToListAsync();
         }
 
@@ -333,6 +749,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
 
             return await context.ContratosVehiculos
                 .Where(ct => ct.ContratoId == contratoId)
+                .Include(ct => ct.EstadoAcreditacion)
                 .Include(ct => ct.Vehiculo)
                 .ThenInclude(v => v.Chofer)
                 .ToListAsync();
@@ -384,10 +801,15 @@ namespace PlatAcreditacionTPCBackend.Controllers
             }
 
 
-            bool existeContrato = await context.Contratos.AnyAsync(x => x.Id == contratoId);
-            if (!existeContrato)
+            Contrato existeContrato = await context.Contratos.FirstOrDefaultAsync(x => x.Id == contratoId);
+            if (existeContrato == null)
             {
                 return NotFound();
+            }
+
+            if (existeContrato.EstadoAcreditacionId != 2)
+            {
+                return BadRequest("Contrato ya acreditado, no puede asignar trabajadores");
             }
 
             contratoTrabajador.CreatedAt = DateTime.Now;
@@ -525,8 +947,114 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 return NotFound();
             }
 
-            return await context.EmpresasContratos.Include(x => x.ListadoHistoricoAcreditacionEmpresaContrato).Include(x => x.Empresa).Include(x => x.Contrato).Where(x => x.ContratoId == id).ToListAsync();
+            return await context.EmpresasContratos.Include(x => x.Empresa).Include(x => x.Contrato).Where(x => x.ContratoId == id).ToListAsync();
         }
+
+        
+        [HttpPost("{contratoId}/acreditar")]
+        public async Task<ActionResult> AcreditarContrato(int contratoId)
+        {
+            // VERIFICAR QUE NO HAYA ITEMS SIN ACREDITAR ASOCIADOS A ESTE CONTRATO  
+            
+            // OBTENER ITEMS NECESARIOS DE LA CARPETA DE ARRANQUE PARA ESTE CONTRATO
+
+            // VERIFICAR DOCUMENTOS CONTRATO
+
+            bool existeDocumentoContratoNoAcreditado = await context.ContratoTiposDocumentoAcreditacion
+                .Where(doc => doc.ContratoId == contratoId && doc.EstadoAcreditacionId != 1)
+                .AnyAsync();
+
+            if (existeDocumentoContratoNoAcreditado)
+            {
+                return BadRequest("Existen documentos asociados al contrato que no estan acreditados");
+            }
+
+            //VERIFICAR EMPRESA
+
+            bool existeDocumentoEmpresaNoAcreditado = await context.EmpresaTiposDocumentosAcreditacion
+                .Where(doc => doc.EmpresaContratoContratoId == contratoId &&  doc.EstadoAcreditacionId != 1)
+                .AnyAsync();
+
+            if (existeDocumentoEmpresaNoAcreditado)
+            {
+                return BadRequest("Existen documentos asociados a la empresa que no estan acreditados");
+            }
+
+            //VERIFICAR TRABAJADORES
+            bool existeDocumentoTrabajadorNoAcreditado = await context.TrabajadorTiposDocumentoAcreditacion
+                .Where(doc => doc.ContratoTrabajadorContratoId == contratoId && doc.EstadoAcreditacionId != 1)
+                .AnyAsync();
+
+            if (existeDocumentoTrabajadorNoAcreditado)
+            {
+                return BadRequest("Existen documentos asociados al trabajador que no estan acreditados");
+            }
+
+            //VERIFICAR VEHICULOS
+            bool existeDocumentoVehiculoNoAcreditado = await context.VehiculoTiposDocumentosAcreditacion
+                .Where(doc => doc.ContratoVehiculoContratoId == contratoId && doc.EstadoAcreditacionId != 1)
+                .AnyAsync();
+
+            if (existeDocumentoVehiculoNoAcreditado)
+            {
+                return BadRequest("Existen documentos asociados al vehiculo que no estan acreditados");
+            }
+
+            var contrato = await context.Contratos.FirstOrDefaultAsync(c => c.Id == contratoId);
+
+            contrato.EstadoAcreditacionId = 1;
+            context.Update(contrato);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+
+        [HttpPut("{idContrato}/empresas/{empresaId}/acreditar")]
+        public async Task<ActionResult<EmpresaContrato>> PutEmpresasPorContratoId(int idContrato, int empresaId)
+        {
+            EmpresaContrato existe = await context.EmpresasContratos.FirstOrDefaultAsync(x => x.ContratoId == idContrato && x.EmpresaId == empresaId);
+            if (existe == null)
+            {
+                return NotFound($"No existe empresa en contrato");
+            }
+
+            existe.EstadoAcreditacionId = 1;
+            context.Update(existe);
+            await context.SaveChangesAsync();
+            return Ok(existe);
+        }
+
+
+        [HttpPut("{idContrato}/trabajador/{trabajadorId}/acreditar")]
+        public async Task<ActionResult<ContratoTrabajador>> PutTrabajadorPorContratoId(int idContrato, int trabajadorId)
+        {
+            ContratoTrabajador existe = await context.ContratosTrabajadores.FirstOrDefaultAsync(x => x.ContratoId == idContrato && x.TrabajadorId == trabajadorId);
+            if (existe == null)
+            {
+                return NotFound();
+            }
+
+            existe.EstadoAcreditacionId = 1;
+            context.Update(existe);
+            await context.SaveChangesAsync();
+            return Ok(existe);
+        }
+
+        [HttpPut("{idContrato}/vehiculo/{vehiculoId}/acreditar")]
+        public async Task<ActionResult<ContratoVehiculo>> PutVehiculoPorContratoId(int idContrato, int vehiculoId)
+        {
+            ContratoVehiculo existe = await context.ContratosVehiculos.FirstOrDefaultAsync(x => x.ContratoId == idContrato && x.VehiculoId == vehiculoId);
+            if (existe == null)
+            {
+                return NotFound();
+            }
+
+            existe.EstadoAcreditacionId = 1;
+            context.Update(existe);
+            await context.SaveChangesAsync();
+            return Ok(existe);
+        }
+
 
 
         [HttpPost]
@@ -570,6 +1098,7 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return await context.Contratos
                 .Include(contrato => contrato.EtapaCreacionContrato)
                 .Include(contrato => contrato.Area)
+                .Include(contrato => contrato.EstadoAcreditacion)
                 .Include(contrato => contrato.EmpresaContrato.Empresa)
                 .Where(contrato => contrato.EtapaCreacionContratoId == id).ToListAsync();
         }

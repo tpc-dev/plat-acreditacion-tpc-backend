@@ -16,10 +16,10 @@ namespace PlatAcreditacionTPCBackend.Controllers
         private readonly IMailService mailService;
         private readonly IConfiguration configuration;
 
-        private readonly string[] correosAdmins = new string []  { 
-            "seba.manriquezh@gmail.com",
-            "sebastian.manriquezh@gmail.com"
-        };
+        //private readonly string[] correosAdmins = new string []  { 
+        //    "seba.manriquezh@gmail.com",
+        //    "sebastian.manriquezh@gmail.com"
+        //};
 
         public RegistroCovidFormularioController(ApplicationDbContext context, IMailService mailService, IConfiguration configuration)
         {
@@ -70,8 +70,6 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 return registroCovidResult;
             }
 
-            //return await context.RegistrosCovidFormularios.OrderByDescending(formulario=> formulario.Fecha).Where(formulario => formulario.Rut == rut).ToListAsync();
-            //return await context.RegistrosCovidFormularios.OrderByDescending(formulario => formulario.Fecha).Where(formulario => formulario.Rut == rut).FirstAsync();
             return Ok(new SimpleResponse() { Code = "003", Message = "Hoy no ha contestado ningun formulario" }); ;
         }
 
@@ -84,14 +82,20 @@ namespace PlatAcreditacionTPCBackend.Controllers
 
 
             InternetAddressList list = new InternetAddressList();
-            list.Add(new MailboxAddress(correosAdmins[0]));
-            list.Add(new MailboxAddress(correosAdmins[1]));
+            List<string> correosAdmins = new List<string>();
+            List<CorreoAlertaCovid> correosAlertaCovids = await context.CorreosAlertaCovid.Where(c => c.Activo == true).ToListAsync();
+            for (int i = 0; i < correosAlertaCovids.Count; i++)
+            {
+                CorreoAlertaCovid correo = correosAlertaCovids[i];
+                correosAdmins.Add(correosAlertaCovids[i].Email);
+            }
+
 
             MailRequest mailRequest = new MailRequest
             {
                 //ToEmail = nuevoUsuarioDTO.Email,
                 //ToEmailList = "seba.manriquezh@gmail.com",
-                ToEmailList = correosAdmins,
+                ToEmailList = correosAdmins.ToArray(),
                 Subject = "Emergencia Persona Formulario COVID-19 ingresos",
                 Body = @"<html>
                                 <h1>

@@ -10,7 +10,9 @@ namespace PlatAcreditacionTPCBackend.Entidades
         [Required]
         public int ContratoId { get; set; }
         public Contrato Contrato { get; set; }
-        public List<HistoricoAcreditacionEmpresaContrato> ListadoHistoricoAcreditacionEmpresaContrato { get; set; }
+        [Required]
+        public int EstadoAcreditacionId { get; set; }
+        public EstadoAcreditacion EstadoAcreditacion { get; set; }
         [Required]
         public DateTime FechaCreacion { get; set; }
     }

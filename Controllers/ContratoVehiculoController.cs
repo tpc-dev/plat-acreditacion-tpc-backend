@@ -6,13 +6,13 @@ using PlatAcreditacionTPCBackend.Entidades;
 namespace PlatAcreditacionTPCBackend.Controllers
 {
     [ApiController]
-    [Route("api/contrato-trabajador")]
-    public class ContratoTrabajadorController : ControllerBase
+    [Route("api/contrato-vehiculo")]
+    public class ContratoVehiculoController : ControllerBase
     {
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
 
-        public ContratoTrabajadorController(ApplicationDbContext context, IMapper mapper)
+        public ContratoVehiculoController(ApplicationDbContext context, IMapper mapper)
         {
             this.context = context;
             this.mapper = mapper;
@@ -20,44 +20,66 @@ namespace PlatAcreditacionTPCBackend.Controllers
 
         [HttpGet]
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<List<ContratoTrabajador>>> Get()
+        public async Task<ActionResult<List<ContratoVehiculo>>> Get()
         {
-            return await context.ContratosTrabajadores
-                .Include(ct => ct.Trabajador)
+            return await context.ContratosVehiculos
+                .Include(ct => ct.Vehiculo)
+                .ThenInclude(v => v.Chofer)
                 .Include(ct => ct.Contrato)
-                .Include(ct => ct.Turno)
-                .ThenInclude(t=> t.Jornada)
+                .Where(ct => ct.Contrato.TerminoContrato > DateTime.Now)
+                //.Include(ct => ct.RegistrosAccesosTrabajadorContrato.Where(registro=> registro.ContratoTrabajadorTrabajadorId == ct.TrabajadorId && registro.ContratoTrabajadorContratoId == ct.ContratoId))
+                .ToListAsync();
+        }
+
+
+        [HttpGet("acreditados")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<ContratoVehiculo>>> GetVehiculosEnContratosAcreditados()
+        {
+            return await context.ContratosVehiculos
+                .Include(ct => ct.Vehiculo)
+                .Include(ct => ct.Vehiculo.Chofer)
+                .Include(ct => ct.Contrato)
                 .Where(ct => ct.Contrato.TerminoContrato > DateTime.Now && ct.Contrato.EstadoAcreditacionId == 1)
+                //.Include(ct => ct.RegistrosAccesosTrabajadorContrato.Where(registro=> registro.ContratoTrabajadorTrabajadorId == ct.TrabajadorId && registro.ContratoTrabajadorContratoId == ct.ContratoId))
+                .ToListAsync();
+        }
+
+        [HttpGet("{contratoId}/{vehiculoId}/documentos-creados")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<VehiculoTipoDocumentoAcreditacion>>> GetDocumentosVehiculosEnContratosAcreditados(int contratoId,int vehiculoId)
+        {
+            return await context.VehiculoTiposDocumentosAcreditacion
+                .Include(ct => ct.TipoDocumentoAcreditacion)
+                .Where(ct => ct.ContratoVehiculoContratoId == contratoId && ct.ContratoVehiculoVehiculoId == vehiculoId)
                 //.Include(ct => ct.RegistrosAccesosTrabajadorContrato.Where(registro=> registro.ContratoTrabajadorTrabajadorId == ct.TrabajadorId && registro.ContratoTrabajadorContratoId == ct.ContratoId))
                 .ToListAsync();
         }
 
         [HttpPost("registro-acceso")]
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<List<RegistroAccesoTrabajadorContrato>>> GetRegistroAccesos(ContratoTrabajador contratoTrabajador)
+        public async Task<ActionResult<List<RegistroAccesoVehiculoContrato>>> GetRegistroAccesos(ContratoVehiculo contratoVehiculo)
         {
-            return await context.RegistroAccesosTrabajadoresContrato
-                .Where(r => r.ContratoTrabajadorContratoId == contratoTrabajador.ContratoId && r.ContratoTrabajadorTrabajadorId == contratoTrabajador.TrabajadorId)
+            return await context.RegistroAccesosVehiculosContrato
                 .OrderByDescending(r => r.FechaEvento)
-                .Take(5)
                 .ToListAsync();
         }
 
         [HttpPost("registro-acceso/{tipo}")]
-        public async Task<ActionResult> PostRegistroAcceso(ContratoTrabajador contratoTrabajador, string tipo)
+        public async Task<ActionResult> PostRegistroAcceso(ContratoVehiculo contratoVehiculo, string tipo)
         {
 
-            RegistroAccesoTrabajadorContrato registroAccesoTrabajadorContrato = new RegistroAccesoTrabajadorContrato
+            RegistroAccesoVehiculoContrato registroAccesoVehiculoContrato = new RegistroAccesoVehiculoContrato
             {
                 TipoEvento = tipo,
                 FechaEvento = DateTime.Now,
-                ContratoTrabajadorContratoId = contratoTrabajador.ContratoId,
-                ContratoTrabajadorTrabajadorId = contratoTrabajador.TrabajadorId
+                ContratoVehiculoContratoId = contratoVehiculo.ContratoId,
+                ContratoVehiculoVehiculoId = contratoVehiculo.VehiculoId
             };
 
-            context.Add(registroAccesoTrabajadorContrato);
+            context.Add(registroAccesoVehiculoContrato);
             await context.SaveChangesAsync();
-            return Ok(registroAccesoTrabajadorContrato);
+            return Ok(registroAccesoVehiculoContrato);
         }
 
 

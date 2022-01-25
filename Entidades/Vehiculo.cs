@@ -11,6 +11,8 @@ namespace PlatAcreditacionTPCBackend.Entidades
         [Required]
         public string  Marca { get; set; }
         [Required]
+        public string Modelo { get; set; }
+        [Required]
         public int TipoVehiculoId { get; set; }
         public TipoVehiculo TipoVehiculo { get; set; }
         [Required]

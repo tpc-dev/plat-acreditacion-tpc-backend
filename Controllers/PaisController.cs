@@ -47,6 +47,13 @@ namespace PlatAcreditacionTPCBackend.Controllers
         [HttpPost]
         public async Task<ActionResult> Post(Pais pais)
         {
+            bool existePais = await context.Paises.AnyAsync(p => p.Nombre.ToUpper() == pais.Nombre.ToUpper().Trim());
+
+            if (existePais)
+            {
+                return BadRequest("Ya existe un pais con este nombre");
+            }
+
             context.Add(pais);
             await context.SaveChangesAsync();
             return Ok();
@@ -66,10 +73,43 @@ namespace PlatAcreditacionTPCBackend.Controllers
                 return NotFound();
             }
 
+
+            bool existePais = await context.Paises.AnyAsync(p => p.Nombre.ToUpper() == pais.Nombre.ToUpper().Trim());
+
+            if (existePais)
+            {
+                return BadRequest("Ya existe un pais con este nombre");
+            }
+
             context.Update(pais);
             await context.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpPut("{id:int}/estado")]
+        public async Task<ActionResult> Put(int id)
+        {
+
+            bool existe = await context.Paises.AnyAsync(pais => pais.Id == id);
+            if (!existe)
+            {
+                return NotFound();
+            }
+
+            Pais pais = await context.Paises.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (pais == null)
+            {
+                return BadRequest("No existe un pais con este Id");
+            }
+
+            pais.Activo = !pais.Activo;
+            context.Entry(pais).State = EntityState.Modified;
+            context.Update(pais);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
 
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)

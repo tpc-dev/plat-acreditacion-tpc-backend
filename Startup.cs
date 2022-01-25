@@ -70,6 +70,10 @@ public class Startup
             options.UseSqlServer(Configuration.GetConnectionString("defaulConnection"))
         );
 
+        services.AddDbContext<ApplicationDbContextGenetec>(options =>
+           options.UseSqlServer(Configuration.GetConnectionString("defaulConnection2"))
+        );
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -115,6 +119,7 @@ public class Startup
 
         services.AddIdentity<IdentityUser, IdentityRole>()
         .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddEntityFrameworkStores<ApplicationDbContextGenetec>()
         .AddDefaultTokenProviders();
     }
 

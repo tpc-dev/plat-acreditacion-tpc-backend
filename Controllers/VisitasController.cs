@@ -149,7 +149,8 @@ namespace PlatAcreditacionTPCBackend.Controllers
         {
 
             // VISITAS AGENDADAS DESDE HOY EN ADELANTE 
-            DateTime fechaManana = DateTime.Now.AddDays(1);
+            //DateTime fechaManana = DateTime.Now.AddDays(1);
+            DateTime fechaManana = DateTime.Now;
             return await context.Visitas.Include(x => x.Area).Include(x => x.Usuario).Where(x => x.FechaVisita>= fechaManana).ToListAsync();
         }
 

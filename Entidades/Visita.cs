@@ -24,6 +24,7 @@ namespace PlatAcreditacionTPCBackend.Entidades
         public Area Area { get; set; }
         public List<IngresoVisitas> IngresosVisitas { get; set; }
         public DateTime FechaVisita { get; set; }
+        public string Hora{ get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

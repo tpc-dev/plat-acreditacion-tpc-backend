@@ -10,7 +10,7 @@ namespace PlatAcreditacionTPCBackend;
 
 public class ApplicationDbContext : IdentityDbContext
 {
-    public ApplicationDbContext(DbContextOptions options) : base(options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
 
     }
@@ -34,7 +34,7 @@ public class ApplicationDbContext : IdentityDbContext
 
         builder.Entity<ContratoVehiculo>()
        .HasKey(e => new { e.ContratoId, e.VehiculoId });
-
+       
     }
 
 
@@ -60,12 +60,12 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Gerencia> Gerencias { get; set; }
     public DbSet<EmpresaContrato> EmpresasContratos { get; set; }
     public DbSet<ContratoUsuario> ContratosUsuarios { get; set; }
-    public DbSet<HistoricoAcreditacionEmpresaContrato> HistoricosAcreditacionEmpresaContratos { get; set; }
     public DbSet<Cargo> Cargos { get; set; }
     public DbSet<Jornada> Jornadas { get; set; }
     public DbSet<Turno> Turnos { get; set; }
     public DbSet<Trabajador> Trabajadores { get; set; }
     public DbSet<TrabajadorTPC> TrabajadoresTPC { get; set; }
+    public DbSet<TrabajadorFrecuente> TrabajadoresFrecuente { get; set; }
     public DbSet<ContratoTrabajador> ContratosTrabajadores { get; set; }
     public DbSet<Genero> Generos { get; set; }
     public DbSet<EstadoCivil> EstadosCivil { get; set; }
@@ -77,9 +77,16 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Chofer> Choferes { get; set; }
     public DbSet<ContratoTipoDocumentoAcreditacion> ContratoTiposDocumentoAcreditacion { get; set; }
     public DbSet<TrabajadorTipoDocumentoAcreditacion> TrabajadorTiposDocumentoAcreditacion { get; set; }
+    public DbSet<VehiculoTipoDocumentoAcreditacion> VehiculoTiposDocumentosAcreditacion { get; set; }
     public DbSet<HistoricoAcreditacionContratoTipoDocumentoAcreditacion> HistoricosAcreditacionContratoTipoDocumentoAcreditacion { get; set; }
     public DbSet<HistoricoAcreditacionTrabajadorTipoDocumentoAcreditacion> HistoricosAcreditacionTrabajadorTipoDocumentoAcreditacion { get; set; }
     public DbSet<HistoricoAcreditacionVehiculoTipoDocumentoAcreditacion> HistoricosAcreditacionVehiculoTipoDocumentoAcreditacion { get; set; }
+    public DbSet<HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion> HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion { get; set; }
     public DbSet<RegistroInduccion> RegistrosInduccion { get; set; }
     public DbSet<RegistroAccesoTrabajadorContrato> RegistroAccesosTrabajadoresContrato { get; set; }
+    public DbSet<RegistroAccesoVehiculoContrato> RegistroAccesosVehiculosContrato { get; set; }
+    public DbSet<RegistroAccesoTrabajadorFrecuente> RegistroAccesosTrabajadoresFrecuente { get; set; }
+    public DbSet<NombradaDiaria> NombradasDiaria { get; set; }
+    public DbSet<NombradaDiariaTrabajadorFrecuente> NombradasDiariasTrabajadoresFrecuente { get; set; }
+    public DbSet<CorreoAlertaCovid> CorreosAlertaCovid { get; set; }
 }

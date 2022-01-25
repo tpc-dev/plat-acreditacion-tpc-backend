@@ -12,8 +12,8 @@ using PlatAcreditacionTPCBackend;
 namespace PlatAcreditacionTPCBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220106033732_InitialData")]
-    partial class InitialData
+    [Migration("20220124154142_ingresotrabajadoresFrecuente")]
+    partial class ingresotrabajadoresFrecuente
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -351,6 +351,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("EstadoAcreditacionId")
+                        .HasColumnType("int");
+
                     b.Property<int>("EtapaCreacionContratoId")
                         .HasColumnType("int");
 
@@ -369,6 +372,8 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AreaId");
+
+                    b.HasIndex("EstadoAcreditacionId");
 
                     b.HasIndex("EtapaCreacionContratoId");
 
@@ -389,6 +394,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("EstadoAcreditacionId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("FechaInicio")
                         .HasColumnType("datetime2");
 
@@ -408,6 +416,8 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ContratoId");
+
+                    b.HasIndex("EstadoAcreditacionId");
 
                     b.HasIndex("TipoDocumentoAcreditacionId");
 
@@ -528,9 +538,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EstadoAcreditacionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("RazonSocial")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -544,8 +551,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EstadoAcreditacionId");
-
                     b.ToTable("Empresas");
                 });
 
@@ -557,6 +562,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Property<int>("ContratoId")
                         .HasColumnType("int");
 
+                    b.Property<int>("EstadoAcreditacionId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
@@ -564,6 +572,8 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasIndex("ContratoId")
                         .IsUnique();
+
+                    b.HasIndex("EstadoAcreditacionId");
 
                     b.ToTable("EmpresasContratos");
                 });
@@ -752,7 +762,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.ToTable("HistoricosAcreditacionContratoTipoDocumentoAcreditacion");
                 });
 
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.HistoricoAcreditacionEmpresaContrato", b =>
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -760,13 +770,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("EmpresaContratoContratoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmpresaContratoEmpresaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmpresaContratoId")
+                    b.Property<int>("EmpresaTipoDocumentoAcreditacionId")
                         .HasColumnType("int");
 
                     b.Property<int>("EstadoAcreditacionId")
@@ -777,11 +781,11 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaTipoDocumentoAcreditacionId");
+
                     b.HasIndex("EstadoAcreditacionId");
 
-                    b.HasIndex("EmpresaContratoEmpresaId", "EmpresaContratoContratoId");
-
-                    b.ToTable("HistoricosAcreditacionEmpresaContratos");
+                    b.ToTable("HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.HistoricoAcreditacionTrabajadorTipoDocumentoAcreditacion", b =>
@@ -970,6 +974,67 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.ToTable("NivelesEducacional");
                 });
 
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.NombradaDiaria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Created_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("HoraInicio")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HoraTermino")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Updated_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("NombradasDiaria");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.NombradaDiariaTrabajadorFrecuente", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("NombradaDiariaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TrabajadorFrecuenteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NombradaDiariaId");
+
+                    b.HasIndex("TrabajadorFrecuenteId");
+
+                    b.ToTable("NombradasDiariasTrabajadoresFrecuente");
+                });
+
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Pais", b =>
                 {
                     b.Property<int>("Id")
@@ -1050,6 +1115,72 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.HasIndex("ContratoTrabajadorContratoId", "ContratoTrabajadorTrabajadorId");
 
                     b.ToTable("RegistroAccesosTrabajadoresContrato");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroAccesoTrabajadorFrecuente", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("FechaEvento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("NombradaDiariaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TipoEvento")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TrabajadorFrecuenteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NombradaDiariaId");
+
+                    b.HasIndex("TrabajadorFrecuenteId");
+
+                    b.ToTable("RegistroAccesosTrabajadoresFrecuente");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroAccesoVehiculoContrato", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("ContratoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContratoVehiculoContratoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContratoVehiculoVehiculoId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("FechaEvento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TipoEvento")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("VehiculoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContratoId");
+
+                    b.HasIndex("VehiculoId");
+
+                    b.ToTable("RegistroAccesosVehiculosContrato");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroCovidAccesos", b =>
@@ -1264,6 +1395,46 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.HasIndex("PaisId");
 
                     b.ToTable("Trabajadores");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TrabajadorFrecuente", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ApellidoMaterno")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApellidoPaterno")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nombres")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rut")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("TrabajadoresFrecuente");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TrabajadorTipoDocumentoAcreditacion", b =>
@@ -1521,6 +1692,10 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Modelo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Patente")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1595,7 +1770,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.HasIndex("VehiculoId");
 
-                    b.ToTable("VehiculoTipoDocumentoAcreditacion");
+                    b.ToTable("VehiculoTiposDocumentosAcreditacion");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Visita", b =>
@@ -1625,6 +1800,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
                     b.Property<bool>("HaIngresado")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Hora")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -1730,6 +1908,12 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.EstadoAcreditacion", "EstadoAcreditacion")
+                        .WithMany()
+                        .HasForeignKey("EstadoAcreditacionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PlatAcreditacionTPCBackend.Entidades.EtapaCreacionContrato", "EtapaCreacionContrato")
                         .WithMany()
                         .HasForeignKey("EtapaCreacionContratoId")
@@ -1737,6 +1921,8 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .IsRequired();
 
                     b.Navigation("Area");
+
+                    b.Navigation("EstadoAcreditacion");
 
                     b.Navigation("EtapaCreacionContrato");
                 });
@@ -1749,6 +1935,12 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.EstadoAcreditacion", "EstadoAcreditacion")
+                        .WithMany()
+                        .HasForeignKey("EstadoAcreditacionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PlatAcreditacionTPCBackend.Entidades.TipoDocumentoAcreditacion", "TipoDocumentoAcreditacion")
                         .WithMany()
                         .HasForeignKey("TipoDocumentoAcreditacionId")
@@ -1756,6 +1948,8 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .IsRequired();
 
                     b.Navigation("Contrato");
+
+                    b.Navigation("EstadoAcreditacion");
 
                     b.Navigation("TipoDocumentoAcreditacion");
                 });
@@ -1849,17 +2043,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Navigation("Vehiculo");
                 });
 
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Empresa", b =>
-                {
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.EstadoAcreditacion", "EstadoAcreditacion")
-                        .WithMany()
-                        .HasForeignKey("EstadoAcreditacionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EstadoAcreditacion");
-                });
-
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EmpresaContrato", b =>
                 {
                     b.HasOne("PlatAcreditacionTPCBackend.Entidades.Contrato", "Contrato")
@@ -1874,9 +2057,17 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.EstadoAcreditacion", "EstadoAcreditacion")
+                        .WithMany()
+                        .HasForeignKey("EstadoAcreditacionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Contrato");
 
                     b.Navigation("Empresa");
+
+                    b.Navigation("EstadoAcreditacion");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EmpresaTipoDocumentoAcreditacion", b =>
@@ -1929,21 +2120,21 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Navigation("EstadoAcreditacion");
                 });
 
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.HistoricoAcreditacionEmpresaContrato", b =>
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.HistoricoAcreditacionEmpresaTipoDocumentoAcreditacion", b =>
                 {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.EmpresaTipoDocumentoAcreditacion", "EmpresaTipoDocumentoAcreditacion")
+                        .WithMany()
+                        .HasForeignKey("EmpresaTipoDocumentoAcreditacionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PlatAcreditacionTPCBackend.Entidades.EstadoAcreditacion", "EstadoAcreditacion")
                         .WithMany()
                         .HasForeignKey("EstadoAcreditacionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.EmpresaContrato", "EmpresaContrato")
-                        .WithMany("ListadoHistoricoAcreditacionEmpresaContrato")
-                        .HasForeignKey("EmpresaContratoEmpresaId", "EmpresaContratoContratoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EmpresaContrato");
+                    b.Navigation("EmpresaTipoDocumentoAcreditacion");
 
                     b.Navigation("EstadoAcreditacion");
                 });
@@ -2016,6 +2207,36 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Navigation("ItemCarpetaArranque");
                 });
 
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.NombradaDiaria", b =>
+                {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.NombradaDiariaTrabajadorFrecuente", b =>
+                {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.NombradaDiaria", "NombradaDiaria")
+                        .WithMany()
+                        .HasForeignKey("NombradaDiariaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.TrabajadorFrecuente", "TrabajadorFrecuente")
+                        .WithMany()
+                        .HasForeignKey("TrabajadorFrecuenteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("NombradaDiaria");
+
+                    b.Navigation("TrabajadorFrecuente");
+                });
+
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroAccesoTrabajadorContrato", b =>
                 {
                     b.HasOne("PlatAcreditacionTPCBackend.Entidades.Contrato", "Contrato")
@@ -2035,6 +2256,40 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Navigation("Contrato");
 
                     b.Navigation("Trabajador");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroAccesoTrabajadorFrecuente", b =>
+                {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.NombradaDiaria", "NombradaDiaria")
+                        .WithMany()
+                        .HasForeignKey("NombradaDiariaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.TrabajadorFrecuente", "TrabajadorFrecuente")
+                        .WithMany()
+                        .HasForeignKey("TrabajadorFrecuenteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("NombradaDiaria");
+
+                    b.Navigation("TrabajadorFrecuente");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroAccesoVehiculoContrato", b =>
+                {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Contrato", "Contrato")
+                        .WithMany()
+                        .HasForeignKey("ContratoId");
+
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Vehiculo", "Vehiculo")
+                        .WithMany()
+                        .HasForeignKey("VehiculoId");
+
+                    b.Navigation("Contrato");
+
+                    b.Navigation("Vehiculo");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.RegistroCovidAccesos", b =>
@@ -2100,6 +2355,17 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     b.Navigation("NivelEducacional");
 
                     b.Navigation("Pais");
+                });
+
+            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TrabajadorFrecuente", b =>
+                {
+                    b.HasOne("PlatAcreditacionTPCBackend.Entidades.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.TrabajadorTipoDocumentoAcreditacion", b =>
@@ -2322,11 +2588,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.Empresa", b =>
                 {
                     b.Navigation("EmpresasContrato");
-                });
-
-            modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.EmpresaContrato", b =>
-                {
-                    b.Navigation("ListadoHistoricoAcreditacionEmpresaContrato");
                 });
 
             modelBuilder.Entity("PlatAcreditacionTPCBackend.Entidades.ItemCarpetaArranque", b =>

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PlatAcreditacionTPCBackend.Migrations
 {
-    public partial class InitialData : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -90,6 +90,23 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DocumentosClasificacion", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Empresas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Rut = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RazonSocial = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Empresas", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -412,30 +429,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Empresas",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Rut = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RazonSocial = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EstadoAcreditacionId = table.Column<int>(type: "int", nullable: false),
-                    Activo = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Empresas", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Empresas_EstadosAcreditacion_EstadoAcreditacionId",
-                        column: x => x.EstadoAcreditacionId,
-                        principalTable: "EstadosAcreditacion",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Contratos",
                 columns: table => new
                 {
@@ -449,7 +442,8 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     TerminoContrato = table.Column<DateTime>(type: "datetime2", nullable: false),
                     InicioAcreditacion = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TerminoAcreditacion = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Activo = table.Column<bool>(type: "bit", nullable: false)
+                    Activo = table.Column<bool>(type: "bit", nullable: false),
+                    EstadoAcreditacionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -458,6 +452,12 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         name: "FK_Contratos_Areas_AreaId",
                         column: x => x.AreaId,
                         principalTable: "Areas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Contratos_EstadosAcreditacion_EstadoAcreditacionId",
+                        column: x => x.EstadoAcreditacionId,
+                        principalTable: "EstadosAcreditacion",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -626,6 +626,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Patente = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Marca = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Modelo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TipoVehiculoId = table.Column<int>(type: "int", nullable: false),
                     ChoferId = table.Column<int>(type: "int", nullable: false),
                     Year = table.Column<int>(type: "int", nullable: false),
@@ -701,6 +702,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 {
                     EmpresaId = table.Column<int>(type: "int", nullable: false),
                     ContratoId = table.Column<int>(type: "int", nullable: false),
+                    EstadoAcreditacionId = table.Column<int>(type: "int", nullable: false),
                     FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -718,6 +720,12 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         principalTable: "Empresas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EmpresasContratos_EstadosAcreditacion_EstadoAcreditacionId",
+                        column: x => x.EstadoAcreditacionId,
+                        principalTable: "EstadosAcreditacion",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -766,6 +774,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FechaTermino = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UrlFile = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EstadoAcreditacionId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -778,6 +787,12 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         principalTable: "Contratos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ContratoTiposDocumentoAcreditacion_EstadosAcreditacion_EstadoAcreditacionId",
+                        column: x => x.EstadoAcreditacionId,
+                        principalTable: "EstadosAcreditacion",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_ContratoTiposDocumentoAcreditacion_TiposDocumentosAcreditacion_TipoDocumentoAcreditacionId",
                         column: x => x.TipoDocumentoAcreditacionId,
@@ -897,7 +912,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         column: x => x.EstadoAcreditacionId,
                         principalTable: "EstadosAcreditacion",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_ContratosVehiculos_Vehiculos_VehiculoId",
                         column: x => x.VehiculoId,
@@ -907,7 +922,35 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "VehiculoTipoDocumentoAcreditacion",
+                name: "RegistroAccesosVehiculosContrato",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FechaEvento = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TipoEvento = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ContratoVehiculoContratoId = table.Column<int>(type: "int", nullable: false),
+                    ContratoId = table.Column<int>(type: "int", nullable: true),
+                    ContratoVehiculoVehiculoId = table.Column<int>(type: "int", nullable: false),
+                    VehiculoId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RegistroAccesosVehiculosContrato", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RegistroAccesosVehiculosContrato_Contratos_ContratoId",
+                        column: x => x.ContratoId,
+                        principalTable: "Contratos",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_RegistroAccesosVehiculosContrato_Vehiculos_VehiculoId",
+                        column: x => x.VehiculoId,
+                        principalTable: "Vehiculos",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VehiculoTiposDocumentosAcreditacion",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -926,26 +969,26 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VehiculoTipoDocumentoAcreditacion", x => x.Id);
+                    table.PrimaryKey("PK_VehiculoTiposDocumentosAcreditacion", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_VehiculoTipoDocumentoAcreditacion_Contratos_ContratoId",
+                        name: "FK_VehiculoTiposDocumentosAcreditacion_Contratos_ContratoId",
                         column: x => x.ContratoId,
                         principalTable: "Contratos",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_VehiculoTipoDocumentoAcreditacion_EstadosAcreditacion_EstadoAcreditacionId",
+                        name: "FK_VehiculoTiposDocumentosAcreditacion_EstadosAcreditacion_EstadoAcreditacionId",
                         column: x => x.EstadoAcreditacionId,
                         principalTable: "EstadosAcreditacion",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_VehiculoTipoDocumentoAcreditacion_TiposDocumentosAcreditacion_TipoDocumentoAcreditacionId",
+                        name: "FK_VehiculoTiposDocumentosAcreditacion_TiposDocumentosAcreditacion_TipoDocumentoAcreditacionId",
                         column: x => x.TipoDocumentoAcreditacionId,
                         principalTable: "TiposDocumentosAcreditacion",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_VehiculoTipoDocumentoAcreditacion_Vehiculos_VehiculoId",
+                        name: "FK_VehiculoTiposDocumentosAcreditacion_Vehiculos_VehiculoId",
                         column: x => x.VehiculoId,
                         principalTable: "Vehiculos",
                         principalColumn: "Id");
@@ -974,35 +1017,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         principalTable: "ItemsCarpetaArranque",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "HistoricosAcreditacionEmpresaContratos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EmpresaContratoId = table.Column<int>(type: "int", nullable: false),
-                    EmpresaContratoEmpresaId = table.Column<int>(type: "int", nullable: false),
-                    EmpresaContratoContratoId = table.Column<int>(type: "int", nullable: false),
-                    EstadoAcreditacionId = table.Column<int>(type: "int", nullable: false),
-                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_HistoricosAcreditacionEmpresaContratos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_HistoricosAcreditacionEmpresaContratos_EmpresasContratos_EmpresaContratoEmpresaId_EmpresaContratoContratoId",
-                        columns: x => new { x.EmpresaContratoEmpresaId, x.EmpresaContratoContratoId },
-                        principalTable: "EmpresasContratos",
-                        principalColumns: new[] { "EmpresaId", "ContratoId" },
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_HistoricosAcreditacionEmpresaContratos_EstadosAcreditacion_EstadoAcreditacionId",
-                        column: x => x.EstadoAcreditacionId,
-                        principalTable: "EstadosAcreditacion",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -1037,7 +1051,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         column: x => x.EstadoAcreditacionId,
                         principalTable: "EstadosAcreditacion",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_ContratosTrabajadores_Trabajadores_TrabajadorId",
                         column: x => x.TrabajadorId,
@@ -1076,7 +1090,34 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         column: x => x.EstadoAcreditacionId,
                         principalTable: "EstadosAcreditacion",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EstadoAcreditacionId = table.Column<int>(type: "int", nullable: false),
+                    EmpresaTipoDocumentoAcreditacionId = table.Column<int>(type: "int", nullable: false),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion_EmpresaTiposDocumentosAcreditacion_EmpresaTipoDocumentoAcreditacionId",
+                        column: x => x.EmpresaTipoDocumentoAcreditacionId,
+                        principalTable: "EmpresaTiposDocumentosAcreditacion",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion_EstadosAcreditacion_EstadoAcreditacionId",
+                        column: x => x.EstadoAcreditacionId,
+                        principalTable: "EstadosAcreditacion",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -1105,6 +1146,56 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "NombradasDiaria",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    HoraInicio = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HoraTermino = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false),
+                    Created_At = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated_At = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NombradasDiaria", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NombradasDiaria_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TrabajadoresFrecuente",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Rut = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Nombres = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApellidoPaterno = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApellidoMaterno = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrabajadoresFrecuente", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrabajadoresFrecuente_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Visitas",
                 columns: table => new
                 {
@@ -1118,6 +1209,7 @@ namespace PlatAcreditacionTPCBackend.Migrations
                     UsuarioId = table.Column<int>(type: "int", nullable: false),
                     AreaId = table.Column<int>(type: "int", nullable: false),
                     FechaVisita = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Hora = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -1158,9 +1250,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_HistoricosAcreditacionVehiculoTipoDocumentoAcreditacion_VehiculoTipoDocumentoAcreditacion_VehiculoTipoDocumentoAcreditacionId",
+                        name: "FK_HistoricosAcreditacionVehiculoTipoDocumentoAcreditacion_VehiculoTiposDocumentosAcreditacion_VehiculoTipoDocumentoAcreditacio~",
                         column: x => x.VehiculoTipoDocumentoAcreditacionId,
-                        principalTable: "VehiculoTipoDocumentoAcreditacion",
+                        principalTable: "VehiculoTiposDocumentosAcreditacion",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });
@@ -1248,6 +1340,32 @@ namespace PlatAcreditacionTPCBackend.Migrations
                         column: x => x.TrabajadorId,
                         principalTable: "Trabajadores",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NombradasDiariasTrabajadoresFrecuente",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NombradaDiariaId = table.Column<int>(type: "int", nullable: false),
+                    TrabajadorFrecuenteId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NombradasDiariasTrabajadoresFrecuente", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NombradasDiariasTrabajadoresFrecuente_NombradasDiaria_NombradaDiariaId",
+                        column: x => x.NombradaDiariaId,
+                        principalTable: "NombradasDiaria",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_NombradasDiariasTrabajadoresFrecuente_TrabajadoresFrecuente_TrabajadorFrecuenteId",
+                        column: x => x.TrabajadorFrecuenteId,
+                        principalTable: "TrabajadoresFrecuente",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -1353,6 +1471,11 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 column: "AreaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Contratos_EstadoAcreditacionId",
+                table: "Contratos",
+                column: "EstadoAcreditacionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Contratos_EtapaCreacionContratoId",
                 table: "Contratos",
                 column: "EtapaCreacionContratoId");
@@ -1398,20 +1521,25 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 column: "ContratoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ContratoTiposDocumentoAcreditacion_EstadoAcreditacionId",
+                table: "ContratoTiposDocumentoAcreditacion",
+                column: "EstadoAcreditacionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ContratoTiposDocumentoAcreditacion_TipoDocumentoAcreditacionId",
                 table: "ContratoTiposDocumentoAcreditacion",
                 column: "TipoDocumentoAcreditacionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Empresas_EstadoAcreditacionId",
-                table: "Empresas",
-                column: "EstadoAcreditacionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmpresasContratos_ContratoId",
                 table: "EmpresasContratos",
                 column: "ContratoId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmpresasContratos_EstadoAcreditacionId",
+                table: "EmpresasContratos",
+                column: "EstadoAcreditacionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmpresaTiposDocumentosAcreditacion_ContratoId",
@@ -1444,13 +1572,13 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 column: "EstadoAcreditacionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HistoricosAcreditacionEmpresaContratos_EmpresaContratoEmpresaId_EmpresaContratoContratoId",
-                table: "HistoricosAcreditacionEmpresaContratos",
-                columns: new[] { "EmpresaContratoEmpresaId", "EmpresaContratoContratoId" });
+                name: "IX_HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion_EmpresaTipoDocumentoAcreditacionId",
+                table: "HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion",
+                column: "EmpresaTipoDocumentoAcreditacionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HistoricosAcreditacionEmpresaContratos_EstadoAcreditacionId",
-                table: "HistoricosAcreditacionEmpresaContratos",
+                name: "IX_HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion_EstadoAcreditacionId",
+                table: "HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion",
                 column: "EstadoAcreditacionId");
 
             migrationBuilder.CreateIndex(
@@ -1484,6 +1612,21 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 column: "CarpetaArranqueId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_NombradasDiaria_UsuarioId",
+                table: "NombradasDiaria",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NombradasDiariasTrabajadoresFrecuente_NombradaDiariaId",
+                table: "NombradasDiariasTrabajadoresFrecuente",
+                column: "NombradaDiariaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NombradasDiariasTrabajadoresFrecuente_TrabajadorFrecuenteId",
+                table: "NombradasDiariasTrabajadoresFrecuente",
+                column: "TrabajadorFrecuenteId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RegistroAccesosTrabajadoresContrato_ContratoId",
                 table: "RegistroAccesosTrabajadoresContrato",
                 column: "ContratoId");
@@ -1497,6 +1640,16 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 name: "IX_RegistroAccesosTrabajadoresContrato_TrabajadorId",
                 table: "RegistroAccesosTrabajadoresContrato",
                 column: "TrabajadorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RegistroAccesosVehiculosContrato_ContratoId",
+                table: "RegistroAccesosVehiculosContrato",
+                column: "ContratoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RegistroAccesosVehiculosContrato_VehiculoId",
+                table: "RegistroAccesosVehiculosContrato",
+                column: "VehiculoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RegistrosCovidAccesos_RegistroCovidFormularioId",
@@ -1532,6 +1685,11 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 name: "IX_Trabajadores_PaisId",
                 table: "Trabajadores",
                 column: "PaisId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrabajadoresFrecuente_UsuarioId",
+                table: "TrabajadoresFrecuente",
+                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrabajadoresTPC_EstadoCivilId",
@@ -1619,23 +1777,23 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 column: "TipoVehiculoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_VehiculoTipoDocumentoAcreditacion_ContratoId",
-                table: "VehiculoTipoDocumentoAcreditacion",
+                name: "IX_VehiculoTiposDocumentosAcreditacion_ContratoId",
+                table: "VehiculoTiposDocumentosAcreditacion",
                 column: "ContratoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_VehiculoTipoDocumentoAcreditacion_EstadoAcreditacionId",
-                table: "VehiculoTipoDocumentoAcreditacion",
+                name: "IX_VehiculoTiposDocumentosAcreditacion_EstadoAcreditacionId",
+                table: "VehiculoTiposDocumentosAcreditacion",
                 column: "EstadoAcreditacionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_VehiculoTipoDocumentoAcreditacion_TipoDocumentoAcreditacionId",
-                table: "VehiculoTipoDocumentoAcreditacion",
+                name: "IX_VehiculoTiposDocumentosAcreditacion_TipoDocumentoAcreditacionId",
+                table: "VehiculoTiposDocumentosAcreditacion",
                 column: "TipoDocumentoAcreditacionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_VehiculoTipoDocumentoAcreditacion_VehiculoId",
-                table: "VehiculoTipoDocumentoAcreditacion",
+                name: "IX_VehiculoTiposDocumentosAcreditacion_VehiculoId",
+                table: "VehiculoTiposDocumentosAcreditacion",
                 column: "VehiculoId");
 
             migrationBuilder.CreateIndex(
@@ -1673,13 +1831,13 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 name: "ContratosVehiculos");
 
             migrationBuilder.DropTable(
-                name: "EmpresaTiposDocumentosAcreditacion");
+                name: "EmpresasContratos");
 
             migrationBuilder.DropTable(
                 name: "HistoricosAcreditacionContratoTipoDocumentoAcreditacion");
 
             migrationBuilder.DropTable(
-                name: "HistoricosAcreditacionEmpresaContratos");
+                name: "HistoricosAcreditacionEmpresaTipoDocumentoAcreditacion");
 
             migrationBuilder.DropTable(
                 name: "HistoricosAcreditacionTrabajadorTipoDocumentoAcreditacion");
@@ -1694,10 +1852,16 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 name: "ItemsCarpetasArranqueCarpetasArranque");
 
             migrationBuilder.DropTable(
+                name: "NombradasDiariasTrabajadoresFrecuente");
+
+            migrationBuilder.DropTable(
                 name: "ProtocolosIngresos");
 
             migrationBuilder.DropTable(
                 name: "RegistroAccesosTrabajadoresContrato");
+
+            migrationBuilder.DropTable(
+                name: "RegistroAccesosVehiculosContrato");
 
             migrationBuilder.DropTable(
                 name: "RegistrosCovidAccesos");
@@ -1715,19 +1879,25 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 name: "ContratoTiposDocumentoAcreditacion");
 
             migrationBuilder.DropTable(
-                name: "EmpresasContratos");
+                name: "EmpresaTiposDocumentosAcreditacion");
 
             migrationBuilder.DropTable(
                 name: "TrabajadorTiposDocumentoAcreditacion");
 
             migrationBuilder.DropTable(
-                name: "VehiculoTipoDocumentoAcreditacion");
+                name: "VehiculoTiposDocumentosAcreditacion");
 
             migrationBuilder.DropTable(
                 name: "Visitas");
 
             migrationBuilder.DropTable(
                 name: "CarpetasArranques");
+
+            migrationBuilder.DropTable(
+                name: "NombradasDiaria");
+
+            migrationBuilder.DropTable(
+                name: "TrabajadoresFrecuente");
 
             migrationBuilder.DropTable(
                 name: "RegistrosCovidFormularios");
@@ -1781,9 +1951,6 @@ namespace PlatAcreditacionTPCBackend.Migrations
                 name: "Jornadas");
 
             migrationBuilder.DropTable(
-                name: "EstadosAcreditacion");
-
-            migrationBuilder.DropTable(
                 name: "EstadosCivil");
 
             migrationBuilder.DropTable(
@@ -1800,6 +1967,9 @@ namespace PlatAcreditacionTPCBackend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Areas");
+
+            migrationBuilder.DropTable(
+                name: "EstadosAcreditacion");
 
             migrationBuilder.DropTable(
                 name: "EtapasCreacionContrato");

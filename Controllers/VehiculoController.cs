@@ -57,20 +57,6 @@ namespace PlatAcreditacionTPCBackend.Controllers
             return Ok();
         }
 
-        //[HttpPost("{id:int}/choferes")]
-        //public async Task<ActionResult> AsignarChofer(int id, Chofer chofer)
-        //{
-        //    bool existeVehiculo = await context.Vehiculos.AnyAsync(v => v.Id == id);
-        //    if (!existeVehiculo)
-        //    {
-        //        return NotFound();
-        //    }
-        //    // var nuevoTipoRolMapped = mapper.Map<TipoRol>(nuevoTipoRolDTO);
-        //    context.Add(vehiculo);
-        //    await context.SaveChangesAsync();
-        //    return Ok();
-        //}
-
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(Vehiculo vehiculo, int id)
         {
@@ -102,6 +88,34 @@ namespace PlatAcreditacionTPCBackend.Controllers
             context.Remove(new Vehiculo() { Id = id });
             await context.SaveChangesAsync();
             return Ok();
+        }
+
+        [HttpPost("registro-acceso")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<RegistroAccesoVehiculoContrato>>> GetRegistroAccesos(ContratoVehiculo contratoVehiculo)
+        {
+            return await context.RegistroAccesosVehiculosContrato
+                .Where(r => r.ContratoVehiculoContratoId == contratoVehiculo.ContratoId && r.ContratoVehiculoVehiculoId == contratoVehiculo.VehiculoId)
+                .OrderByDescending(r => r.FechaEvento)
+                .Take(5)
+                .ToListAsync();
+        }
+
+        [HttpPost("registro-acceso/{tipo}")]
+        public async Task<ActionResult> PostRegistroAcceso(ContratoVehiculo contratoVehiculo, string tipo)
+        {
+
+            RegistroAccesoVehiculoContrato registroAccesoVehiculoContrato = new RegistroAccesoVehiculoContrato
+            {
+                TipoEvento = tipo,
+                FechaEvento = DateTime.Now,
+                ContratoVehiculoContratoId = contratoVehiculo.ContratoId,
+                ContratoVehiculoVehiculoId = contratoVehiculo.VehiculoId
+            };
+
+            context.Add(registroAccesoVehiculoContrato);
+            await context.SaveChangesAsync();
+            return Ok(registroAccesoVehiculoContrato);
         }
     }
 }
